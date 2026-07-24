@@ -162,11 +162,33 @@ body {
 .kr-trend-up { color:var(--verde); font-size:12px; font-weight:600; }
 .kr-trend-down { color:var(--vermelho); font-size:12px; font-weight:600; }
 
-/* ---------- responsive ---------- */
+/* ---------- responsive (mobile) ---------- */
 @media (max-width:900px) {
   .kr-shell { grid-template-columns:1fr; }
-  .kr-side { position:static; height:auto; flex-direction:row; flex-wrap:wrap; align-items:center; }
-  .kr-nav { flex-direction:row; flex-wrap:wrap; }
-  .kr-nav .grp, .kr-promo { display:none; }
-  .kr-nav a .ct { position:static; }
+  /* topo compacto: marca + usuário numa linha, menu vira faixa que desliza */
+  .kr-side {
+    position:sticky; top:0; z-index:30; height:auto;
+    flex-flow:row wrap; align-items:center; gap:10px;
+    padding:10px 14px; border-right:none; border-bottom:1px solid var(--border);
+  }
+  .kr-brand { padding:0; }
+  .kr-brand img { height:22px; }
+  .kr-user { margin-left:auto; padding:6px 10px; gap:8px; }
+  .kr-user .rl { display:none; }
+  .kr-nav {
+    flex:1 1 100%; order:3;
+    flex-direction:row; flex-wrap:nowrap; overflow-x:auto; gap:6px;
+    padding-bottom:2px; scrollbar-width:none; -webkit-overflow-scrolling:touch;
+  }
+  .kr-nav::-webkit-scrollbar { display:none; }
+  .kr-nav a { flex:0 0 auto; white-space:nowrap; padding:7px 11px; }
+  .kr-nav .grp { display:none; }
+  .kr-promo { display:none; }
+  .kr-nav a .ct { position:static; margin-left:6px; }
+  .kr-topbar { padding:11px 16px; }
+  .kr-content { padding:18px 16px; }
+  .kr-screen-head { flex-direction:column; align-items:flex-start; gap:12px; }
+  .kr-h1 { font-size:22px; }
+  /* containers de conteúdo largo rolam sozinhos em vez de estourar a tela */
+  .kr-table-wrap, .kr-scroll-x { overflow-x:auto; -webkit-overflow-scrolling:touch; }
 }
