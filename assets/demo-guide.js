@@ -76,11 +76,11 @@
       agente: "Hermes · comunicação",
       eyebrow: "Conteúdo",
       titulo: "Sua agência de marketing, 24 horas",
-      texto: "Cria post, story, discurso — e também imagem, vídeo e voz — sempre na sua narrativa. É como ter uma agência dentro da campanha, dia e noite. Nada é publicado sem a sua aprovação.",
+      texto: "Você manda a foto real do corpo a corpo. O Kratos devolve o post pronto — no seu template, com número, identidade e CNPJ. E ainda escreve o texto e cuida do anúncio. Nada é publicado sem a sua aprovação.",
       pontos: [
-        "Conteúdo alinhado ao seu discurso, sem contradição",
-        "Imagem, vídeo e voz gerados sob demanda",
-        "Rótulo de IA aplicado automático (compliance 2026)"
+        "Designer: sua foto vira card de feed e story, com número e CNPJ",
+        "Redator e gestor de tráfego: texto na sua voz e anúncio otimizado",
+        "Tudo com aprovação humana e trilha de compliance 2026"
       ]
     },
     "agenda.html": {

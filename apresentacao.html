@@ -85,13 +85,25 @@
   .conceptframe{border-radius:18px;overflow:hidden;box-shadow:0 34px 80px rgba(0,0,0,.55);border:1px solid rgba(220,91,72,.28);}
   .conceptframe img{display:block;width:100%;max-height:66vh;object-fit:cover;}
 
-  /* mosaico de criativos (Hermes) */
-  .mosaic{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:6px;}
-  .mosaic figure{position:relative;border-radius:12px;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.15);aspect-ratio:3/2;background:#e9ddd5;}
-  .mosaic img{width:100%;height:100%;object-fit:cover;display:block;}
-  .mosaic .tag{position:absolute;bottom:7px;left:7px;background:rgba(13,11,10,.74);color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:20px;}
-  .mosaic .ia{position:absolute;top:7px;right:7px;background:var(--coral);color:#fff;font-size:8.5px;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:20px;}
-  @media (max-width:860px){.mosaic{grid-template-columns:repeat(2,1fr);}}
+  /* agência Hermes: foto real -> template pronto */
+  .postwrap{display:flex;gap:16px;align-items:flex-start;justify-content:center;}
+  .postmock{width:290px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 22px 50px rgba(0,0,0,.22);border:1px solid var(--border);}
+  .postmock .ph{position:relative;aspect-ratio:1/1;overflow:hidden;}
+  .postmock .ph img{width:100%;height:100%;object-fit:cover;display:block;}
+  .postmock .num{position:absolute;top:12px;left:12px;width:46px;height:46px;border-radius:50%;background:var(--coral);color:#fff;font-weight:800;font-size:19px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.35);border:2px solid #fff;}
+  .postmock .plat{position:absolute;top:14px;right:12px;background:rgba(13,11,10,.55);color:#fff;font-size:9px;font-weight:700;letter-spacing:.05em;padding:3px 9px;border-radius:20px;}
+  .postmock .band{background:var(--coral);color:#fff;padding:10px 14px;}
+  .postmock .band .nm{font-weight:800;font-size:15px;letter-spacing:.01em;}
+  .postmock .band .hd{font-size:11px;opacity:.92;margin-top:1px;}
+  .postmock .foot{background:#0d0b0a;color:#c9b8b0;font-size:8.5px;letter-spacing:.02em;padding:6px 14px;}
+  .storymock{width:186px;aspect-ratio:9/16;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 22px 50px rgba(0,0,0,.22);}
+  .storymock img{width:100%;height:100%;object-fit:cover;display:block;}
+  .storymock .ov{position:absolute;inset:0;background:linear-gradient(to top, rgba(13,11,10,.9) 0%, rgba(13,11,10,0) 52%);}
+  .storymock .num{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;background:var(--coral);color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;}
+  .storymock .plat{position:absolute;top:14px;left:12px;background:rgba(13,11,10,.55);color:#fff;font-size:9px;font-weight:700;letter-spacing:.05em;padding:3px 9px;border-radius:20px;}
+  .storymock .cap{position:absolute;left:13px;right:13px;bottom:13px;color:#fff;}
+  .storymock .cap .t{font-weight:800;font-size:15px;line-height:1.12;}
+  .storymock .cap .c{font-size:8px;opacity:.85;margin-top:5px;letter-spacing:.02em;}
 
   /* flow / cards */
   .flowcards{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
@@ -274,23 +286,39 @@
     </div>
   </section>
 
-  <!-- 8 MARKETING / HERMES (mosaico dos criativos reais) -->
+  <!-- 8 MARKETING / HERMES (agência: foto real -> template + papéis) -->
   <section class="slide light">
-    <div class="slide-inner showcase" style="max-width:1120px;">
-      <div class="eyebrow rise">Comunicação · Hermes · 24 horas</div>
-      <h1 class="head wide rise" style="max-width:30ch;margin-bottom:6px;">Uma agência de marketing dentro da campanha.</h1>
-      <p class="body rise" style="max-width:70ch;margin-bottom:14px;">Post, story, discurso, imagem, vídeo e voz — <strong>todos gerados pelo Kratos</strong>, na sua narrativa. Nada publica sem a sua aprovação.</p>
-      <div class="mosaic rise">
-        <figure><img src="assets/creativos/saude.png" alt="Criativo de saúde"><span class="ia">IA</span><span class="tag">Carrossel</span></figure>
-        <figure><img src="assets/creativos/comicio.png" alt="Criativo de comício"><span class="ia">IA</span><span class="tag">Reels</span></figure>
-        <figure><img src="assets/creativos/educacao.png" alt="Criativo de educação"><span class="ia">IA</span><span class="tag">Card</span></figure>
-        <figure><img src="assets/creativos/transparencia.png" alt="Criativo de transparência"><span class="ia">IA</span><span class="tag">Thread</span></figure>
-        <figure><img src="assets/creativos/hospital.png" alt="Criativo de hospital"><span class="ia">IA</span><span class="tag">Vídeo</span></figure>
-        <figure><img src="assets/creativos/mobilidade.png" alt="Criativo de mobilidade"><span class="ia">IA</span><span class="tag">Post</span></figure>
-        <figure><img src="assets/creativos/seguranca.png" alt="Criativo de segurança"><span class="ia">IA</span><span class="tag">Release</span></figure>
-        <figure><img src="assets/creativos/bastidores.png" alt="Criativo de bastidores"><span class="ia">IA</span><span class="tag">Story</span></figure>
+    <div class="slide-inner cols">
+      <div>
+        <div class="eyebrow rise">Comunicação · Hermes</div>
+        <h1 class="head rise">Uma agência inteira: designer, redator e tráfego.</h1>
+        <p class="body rise">Você manda a <strong>foto real</strong> do corpo a corpo. O Kratos devolve o <strong>post pronto</strong> — no seu template, com número, identidade e os dados legais da campanha. E ainda escreve o texto e cuida do anúncio.</p>
+        <div class="hlist rise">
+          <div class="hitem"><span class="bt"></span><div><b>Designer</b> — pega a sua foto e monta o card pro feed e pro story, já com número e CNPJ da campanha.</div></div>
+          <div class="hitem"><span class="bt"></span><div><b>Redator</b> — escreve a legenda, o roteiro e o discurso na sua voz.</div></div>
+          <div class="hitem"><span class="bt"></span><div><b>Gestor de tráfego</b> — sobe o anúncio, define público e verba e otimiza sozinho.</div></div>
+        </div>
+        <div class="fecho rise">Você não inventa foto. <span class="hl">Você transforma o que é real em campanha.</span></div>
       </div>
-      <div class="fecho rise" style="margin-top:16px;max-width:none;">O conteúdo não para. <span class="hl">E toda peça de IA já sai rotulada — compliance 2026.</span></div>
+      <div class="rise">
+        <div class="postwrap">
+          <div class="postmock">
+            <div class="ph">
+              <img src="assets/creativos/comicio.png" alt="Foto real de comício virando post">
+              <span class="num">45</span><span class="plat">FEED · INSTAGRAM</span>
+            </div>
+            <div class="band"><div class="nm">MARIANA COSTA</div><div class="hd">Juntos por Santa Catarina · @mariana45</div></div>
+            <div class="foot">Propaganda eleitoral · CNPJ 45.123.456/0001-90</div>
+          </div>
+          <div class="storymock">
+            <img src="assets/creativos/saude.png" alt="Foto real de saúde virando story">
+            <div class="ov"></div>
+            <span class="num">45</span><span class="plat">STORY</span>
+            <div class="cap"><div class="t">Saúde perto de você</div><div class="c">MARIANA 45 · CNPJ 45.123.456/0001-90</div></div>
+          </div>
+        </div>
+        <div class="shotcap rise" style="margin-top:14px;">A mesma foto da rua, pronta pro feed e pro story — com número e CNPJ no lugar certo.</div>
+      </div>
     </div>
   </section>
 
