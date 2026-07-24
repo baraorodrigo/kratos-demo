@@ -42,12 +42,12 @@
     "financeiro.html": {
       agente: "Drachma · financeiro",
       eyebrow: "Financeiro",
-      titulo: "Prestação de contas sem pânico",
-      texto: "Todo gasto organizado com nota, contrato e comprovante. Alerta antes de estourar o teto do TSE. Sua prestação de contas fica pronta o tempo todo — não na véspera do prazo.",
+      titulo: "Todo mundo manda a nota pro mesmo lugar",
+      texto: "Qualquer pessoa da equipe fotografa a nota no WhatsApp ou Telegram — e tudo cai no mesmo lugar, organizado sozinho. O Kratos lê os dados direto na SEFAZ (oficial, sem erro de foto), arquiva por fornecedor e atualiza o teto do TSE na hora.",
       pontos: [
-        "Cada nota vira arquivo organizado no ato",
-        "Alerta antes de passar do limite de gastos",
-        "Documentação do jeito que o TSE exige"
+        "Vários da equipe enviam documentos pro mesmo lugar",
+        "Leitura oficial da nota (SEFAZ), não adivinhação por foto",
+        "Prestação de contas pronta o tempo todo — nunca na véspera"
       ]
     },
     "juridico.html": {
@@ -63,24 +63,24 @@
     },
     "territorio.html": {
       agente: "Polis · território",
-      eyebrow: "Território",
-      titulo: "Decisão de agenda com dado, não achismo",
-      texto: "O mapa vivo da campanha: onde o povo está pedindo o quê, quais bairros estão descobertos e onde vale a pena ir. A agenda deixa de ser palpite.",
+      eyebrow: "Território · CRM de lideranças",
+      titulo: "Suas lideranças num CRM inteligente",
+      texto: "Cada liderança no mapa do estado, com WhatsApp integrado. Você envia material e mensagem e acompanha o que ela prometeu e o que entregou. Cadastrou, aparece no mapa na hora.",
       pontos: [
-        "Demandas mapeadas por bairro e por tema",
-        "Aponta áreas fortes com zero cobertura",
-        "Sugere a próxima visita por oportunidade real"
+        "Mapa de Santa Catarina por região e força de base",
+        "Timeline de prometido × entregue por liderança",
+        "No fim da campanha, você cruza quem realmente entregou"
       ]
     },
     "conteudo.html": {
       agente: "Hermes · comunicação",
       eyebrow: "Conteúdo",
-      titulo: "Comunicação alinhada e sob controle",
-      texto: "Todo conteúdo passa por aqui — rascunho, aprovação, publicação. Sempre alinhado à sua narrativa, com rótulo de IA e a sua aprovação antes de ir para o ar.",
+      titulo: "Sua agência de marketing, 24 horas",
+      texto: "Cria post, story, discurso — e também imagem, vídeo e voz — sempre na sua narrativa. É como ter uma agência dentro da campanha, dia e noite. Nada é publicado sem a sua aprovação.",
       pontos: [
-        "Nunca contradiz o que você já defendeu",
-        "Rótulo de IA aplicado (regra 2026)",
-        "Nada é publicado sem você aprovar"
+        "Conteúdo alinhado ao seu discurso, sem contradição",
+        "Imagem, vídeo e voz gerados sob demanda",
+        "Rótulo de IA aplicado automático (compliance 2026)"
       ]
     },
     "agenda.html": {
@@ -108,11 +108,11 @@
       agente: "Argos · monitoramento",
       eyebrow: "Monitoramento",
       titulo: "As redes escutadas 24 horas por dia",
-      texto: "Mostra o que está crescendo, o clima geral da conversa e alerta quando um assunto sensível dispara. O sentimento é sempre agregado — nunca perfila pessoas.",
+      texto: "O Kratos acompanha o X, o Instagram, o Facebook, o TikTok e os portais de notícia — sem parar. Mostra o que cresce, o clima de cada tema e avisa antes de a crise explodir.",
       pontos: [
-        "Menções e temas em tempo real",
-        "Clima geral sem expor indivíduos (LGPD)",
-        "Alerta de crise direto para você"
+        "Escuta todas as redes + imprensa, 24 horas",
+        "Termômetro dos assuntos em tempo real",
+        "Sentimento agregado — nunca perfila pessoa (LGPD)"
       ]
     },
     "configuracao.html": {

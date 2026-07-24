@@ -6,398 +6,228 @@
 <title>Conteúdo · Kratos</title>
 <link rel="stylesheet" href="assets/kratos-ui.css">
 <style>
-/* ---------- conteúdo — só o que o CSS compartilhado não cobre ---------- */
-
-/* filtros (mesmo padrão da home) */
-.kr-filters { display:flex; gap:8px; flex-wrap:wrap; }
-.kr-filter { font-family:inherit; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--muted); transition:all var(--dur-fast) var(--ease); }
-.kr-filter:hover { border-color:var(--coral-suave); }
+.kr-filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+.kr-filter { font-family:inherit; font-size:12px; font-weight:600; padding:6px 14px; border-radius:var(--r-full); cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--muted); transition:all var(--dur-fast) var(--ease); }
+.kr-filter:hover { border-color:var(--coral-suave); color:var(--coral); }
 .kr-filter.active { background:var(--preto); color:#fff; border-color:var(--preto); }
-
-/* canais que a paleta compartilhada não cobre */
 .kr-pill.escuro { background:var(--preto); color:#fff; }
-.kr-pill.coral-suave { background:var(--coral-suave); color:#7a2f1f; }
 
-/* kanban */
-.kr-kanban { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:16px; }
-.kr-kanban-col { display:flex; flex-direction:column; gap:12px; }
-.kr-kanban-head { display:flex; align-items:center; justify-content:space-between; padding:0 2px; }
-.kr-kanban-title { font-size:var(--t-sm); font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--texto); }
-.kr-kanban-cards { display:flex; flex-direction:column; gap:12px; }
+.kr-kanban { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; align-items:start; margin-bottom:22px; }
+.kr-col-head { display:flex; align-items:center; gap:9px; padding:0 2px 12px; }
+.kr-col-title { font-size:var(--t-sm); font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+.kr-col-count { font-size:11px; font-weight:700; border-radius:var(--r-full); min-width:20px; height:20px; padding:0 6px; display:flex; align-items:center; justify-content:center; }
+.kr-col-count.ambar { background:var(--pill-ambar); color:#7a5a10; }
+.kr-col-count.verde { background:var(--pill-verde); color:#2c6e2c; }
+.kr-col-count.cinza { background:var(--base); color:var(--muted); }
+.kr-col-cards { display:flex; flex-direction:column; gap:14px; }
 
-.kr-piece-card { padding:14px; display:flex; flex-direction:column; gap:10px; }
-.kr-piece-thumb {
-  height:84px; border-radius:var(--r-sm); background:var(--base);
-  display:flex; align-items:center; justify-content:center; color:var(--muted);
-}
-.kr-piece-title { font-size:var(--t-sm); font-weight:600; line-height:1.35; }
-.kr-piece-meta { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-.kr-piece-time { font-size:var(--t-xs); color:var(--muted); }
-.kr-piece-badge { font-size:var(--t-xs); color:var(--muted); background:var(--base); border-radius:var(--r-sm); padding:6px 9px; }
-.kr-piece-stats { font-size:var(--t-xs); color:var(--muted); }
-.kr-piece-actions { display:flex; gap:8px; }
-.kr-piece-actions .kr-btn { flex:1; text-align:center; }
-.kr-piece-link { font-size:var(--t-xs); font-weight:600; color:var(--coral); text-decoration:none; }
-.kr-piece-link:hover { text-decoration:underline; }
-.kr-piece-empty { font-size:var(--t-sm); color:var(--muted); text-align:center; padding:28px 10px; border:1px dashed var(--border); border-radius:var(--r-md); }
+.kr-piece { padding:0; overflow:hidden; transition:transform .16s var(--ease), box-shadow .16s var(--ease); cursor:pointer; }
+.kr-piece:hover { transform:translateY(-2px); box-shadow:0 14px 30px rgba(20,24,29,.1); }
+.kr-thumb { position:relative; height:158px; background:var(--base); overflow:hidden; }
+.kr-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.kr-thumb .type { position:absolute; top:9px; left:9px; display:inline-flex; align-items:center; gap:5px; background:rgba(13,11,10,.62); color:#fff; font-size:10.5px; font-weight:700; letter-spacing:.02em; padding:4px 9px; border-radius:var(--r-full); backdrop-filter:blur(3px); }
+.kr-thumb .type svg { width:12px; height:12px; }
+.kr-thumb .ia { position:absolute; bottom:9px; right:9px; background:rgba(253,249,246,.92); color:#8a5a10; font-size:9.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:3px 8px; border-radius:var(--r-full); }
+.kr-body { padding:14px 15px 15px; display:flex; flex-direction:column; gap:9px; }
+.kr-title { font-size:var(--t-sm); font-weight:600; line-height:1.35; }
+.kr-meta { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.kr-time { font-size:var(--t-xs); color:var(--muted); }
+.kr-sched { font-size:var(--t-xs); font-weight:600; color:var(--coral); background:var(--base); border-radius:var(--r-sm); padding:6px 10px; display:inline-flex; align-items:center; gap:6px; align-self:flex-start; }
+.kr-sched svg { width:13px; height:13px; }
+.kr-stats { display:flex; gap:12px; font-size:var(--t-xs); color:var(--muted); }
+.kr-stats b { color:var(--texto); font-weight:700; }
+.kr-actions { display:flex; gap:8px; margin-top:2px; }
+.kr-actions .kr-btn { flex:1; text-align:center; }
+.kr-link { font-size:var(--t-xs); font-weight:700; color:var(--coral); text-decoration:none; display:inline-flex; align-items:center; gap:5px; }
+.kr-link:hover { text-decoration:underline; }
 
-/* calendário editorial */
-.kr-mini-cal { display:flex; gap:10px; margin-top:6px; }
-.kr-cal-day { flex:1; text-align:center; border:1px solid var(--border); border-radius:var(--r-md); padding:10px 6px 12px; }
+.kr-cal { display:flex; gap:10px; margin-top:8px; }
+.kr-cal-day { flex:1; text-align:center; border:1px solid var(--border); border-radius:var(--r-md); padding:11px 6px 13px; }
 .kr-cal-day.today { border-color:var(--coral); background:var(--base); }
-.kr-cal-day .wd { font-size:var(--t-xs); font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
-.kr-cal-day .dt { font-size:var(--t-md); font-weight:700; margin:5px 0 9px; }
-.kr-cal-dots { display:flex; justify-content:center; align-items:center; gap:4px; flex-wrap:wrap; min-height:8px; }
-.kr-cal-dot { width:7px; height:7px; border-radius:50%; flex:none; }
+.kr-cal-wd { font-size:var(--t-xs); font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+.kr-cal-dt { font-size:var(--t-md); font-weight:700; margin:5px 0 9px; }
+.kr-cal-dots { display:flex; justify-content:center; gap:4px; min-height:8px; }
+.kr-cal-dot { width:7px; height:7px; border-radius:50%; }
 .kr-cal-legend { display:flex; flex-wrap:wrap; gap:16px; margin-top:16px; font-size:var(--t-xs); color:var(--muted); }
 .kr-cal-legend .sw { width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:6px; vertical-align:middle; }
 
-/* skeleton de loading (referência do estado, não usado no mock estático) */
-.kr-skel { background:linear-gradient(90deg, var(--base) 25%, var(--border) 37%, var(--base) 63%); background-size:400% 100%; animation:krskel 1.4s ease infinite; border-radius:var(--r-sm); }
-@keyframes krskel { 0%{background-position:100% 50%;} 100%{background-position:0 50%;} }
-
-@media (max-width:900px) {
-  .kr-kanban { grid-template-columns:1fr; }
-  .kr-mini-cal { flex-wrap:wrap; }
-  .kr-cal-day { min-width:calc(33% - 10px); }
-}
+@media (max-width:1000px){ .kr-kanban{ grid-template-columns:1fr; } .kr-cal{ flex-wrap:wrap; } .kr-cal-day{ min-width:calc(33% - 8px); } }
 </style>
 <link rel="stylesheet" href="assets/demo-guide.css">
 </head>
 <body>
-
 <div class="kr-shell">
 
   <aside class="kr-side">
     <div class="kr-brand"><img src="assets/kratos-logo.svg" alt="Kratos"></div>
     <div class="kr-user">
       <div class="kr-avatar">R</div>
-      <div style="flex:1;min-width:0;">
-        <div class="nm">Rodrigo Barão</div>
-        <div class="rl">admin</div>
-      </div>
+      <div style="flex:1;min-width:0;"><div class="nm">Rodrigo Barão</div><div class="rl">admin</div></div>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
-
     <nav class="kr-nav">
-      <a href="home.html">
-        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span>
-        <span>Dashboard</span>
-      </a>
-      <a href="home.html">
-        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
-        <span>Comando</span>
-      </a>
-      <a href="pendencia-detalhe.html">
-        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2 3h6l2-3h4"/><path d="M5 12 3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2l-2 7"/><path d="M3 12v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6"/></svg></span>
-        <span>Pendências</span>
-        <span class="ct">7</span>
-      </a>
-      <a href="war-room-crise.html">
-        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14 6 10z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></span>
-        <span>Alertas</span>
-        <span class="ct">2</span>
-      </a>
-      <a href="financeiro.html">
-        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><rect x="14.5" y="12.5" width="4.5" height="3" rx="1"/></svg></span>
-        <span>Financeiro</span>
-      </a>
-      <a href="juridico.html">
-        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M4 7 2 12a2.6 2.6 0 0 0 5 0L5 7z"/><path d="M20 7l-2 5a2.6 2.6 0 0 0 5 0l-2-5z"/><path d="M8 21h8"/></svg></span>
-        <span>Jurídico</span>
-      </a>
-      <a href="territorio.html">
-        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg></span>
-        <span>Território</span>
-      </a>
-      <a href="conteudo.html" class="active">
-        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17l5-5 3 3 4-5 4 5"/></svg></span>
-        <span>Conteúdo</span>
-        <span class="ct">3</span>
-      </a>
-      <a href="agenda.html">
-        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-        <span>Agenda</span>
-      </a>
-      <a href="pesquisa.html">
-        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="20" y1="20" x2="15.5" y2="15.5"/></svg></span>
-        <span>Pesquisa</span>
-      </a>
-      <a href="monitoramento.html">
-        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 13 7 13 9 7 13 19 16 13 22 13"/></svg></span>
-        <span>Monitoramento</span>
-      </a>
-      <a href="configuracao.html">
-        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></span>
-        <span>Configuração</span>
-      </a>
-      <a href="auditoria.html">
-        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
-        <span>Auditoria</span>
-      </a>
+      <a href="home.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span><span>Dashboard</span></a>
+      <a href="home.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span><span>Comando</span></a>
+      <a href="pendencia-detalhe.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2 3h6l2-3h4"/><path d="M5 12 3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2l-2 7"/><path d="M3 12v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6"/></svg></span><span>Pendências</span><span class="ct">7</span></a>
+      <a href="war-room-crise.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14 6 10z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></span><span>Alertas</span><span class="ct">2</span></a>
+      <a href="financeiro.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><rect x="14.5" y="12.5" width="4.5" height="3" rx="1"/></svg></span><span>Financeiro</span></a>
+      <a href="juridico.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M4 7 2 12a2.6 2.6 0 0 0 5 0L5 7z"/><path d="M20 7l-2 5a2.6 2.6 0 0 0 5 0l-2-5z"/><path d="M8 21h8"/></svg></span><span>Jurídico</span></a>
+      <a href="territorio.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg></span><span>Território</span></a>
+      <a href="conteudo.html" class="active"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17l5-5 3 3 4-5 4 5"/></svg></span><span>Conteúdo</span><span class="ct">3</span></a>
+      <a href="agenda.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span>Agenda</span></a>
+      <a href="pesquisa.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="20" y1="20" x2="15.5" y2="15.5"/></svg></span><span>Pesquisa</span></a>
+      <a href="monitoramento.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 13 7 13 9 7 13 19 16 13 22 13"/></svg></span><span>Monitoramento</span></a>
+      <a href="configuracao.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></span><span>Configuração</span></a>
+      <a href="auditoria.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><span>Auditoria</span></a>
     </nav>
-
-    <div class="kr-promo">
-      <p>Ative módulos premium</p>
-      <button type="button">Ver módulos</button>
-    </div>
+    <div class="kr-promo"><p>Ative módulos premium</p><button type="button">Ver módulos</button></div>
   </aside>
 
   <div class="kr-main">
     <header class="kr-topbar">
       <span class="kr-crumb">Conteúdo</span>
-      <div class="kr-status">
-        <span class="kr-dot"></span>
-        <span>Hermes on-line</span>
-        <span>·</span>
-        <span class="tabular">24 jul 2026 · 14:23</span>
-        <span>·</span>
-        <span>v0.3.1</span>
-      </div>
+      <div class="kr-status"><span class="kr-dot"></span><span>Hermes on-line</span><span>·</span><span class="tabular">24 jul 2026 · 14:23</span><span>·</span><span>v0.3.1</span></div>
     </header>
 
     <main class="kr-content">
-
       <div class="kr-screen-head">
         <div>
           <h1 class="kr-h1">Conteúdo</h1>
-          <p class="kr-sub">Hermes · 3 rascunhos aguardando aprovação</p>
+          <p class="kr-sub">Hermes · sua agência de marketing 24h · 3 rascunhos aguardando aprovação</p>
         </div>
         <button type="button" class="kr-btn primary">Nova peça</button>
       </div>
 
-      <!-- filtros -->
-      <div class="kr-filters" style="margin-bottom:20px;">
-        <button type="button" class="kr-pill kr-filter active">Todos</button>
-        <button type="button" class="kr-pill kr-filter">Instagram</button>
-        <button type="button" class="kr-pill kr-filter">Twitter/X</button>
-        <button type="button" class="kr-pill kr-filter">TikTok</button>
-        <button type="button" class="kr-pill kr-filter">Release imprensa</button>
-        <button type="button" class="kr-pill kr-filter">Discurso</button>
+      <div class="kr-filters">
+        <button type="button" class="kr-filter active">Todos</button>
+        <button type="button" class="kr-filter">Instagram</button>
+        <button type="button" class="kr-filter">Twitter/X</button>
+        <button type="button" class="kr-filter">TikTok</button>
+        <button type="button" class="kr-filter">Release imprensa</button>
+        <button type="button" class="kr-filter">Discurso</button>
       </div>
 
-      <!-- TODO STATE: loading — skeleton nos cards (thumbnail, título e meta com .kr-skel no lugar do conteúdo real enquanto Hermes gera/carrega a peça) -->
-      <!-- TODO STATE: empty — coluna sem peças exibe só ".kr-piece-empty" com "Nenhuma peça aqui", sem cards -->
-      <!-- TODO STATE: error — cabeçalho da coluna some e entra aviso "Hermes indisponível" + botão "Tentar novamente" no lugar dos cards -->
-
-      <!-- kanban -->
       <section class="kr-kanban">
 
-        <!-- coluna 1: rascunho -->
-        <div class="kr-kanban-col">
-          <div class="kr-kanban-head">
-            <span class="kr-kanban-title">Rascunho</span>
-            <span class="kr-pill ambar tabular">3</span>
-          </div>
-          <div class="kr-kanban-cards">
-
-            <article class="kr-card kr-piece-card">
-              <div class="kr-piece-thumb">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-              </div>
-              <p class="kr-piece-title">Carrossel saúde da atenção básica</p>
-              <div class="kr-piece-meta">
-                <span class="kr-pill rosa">Instagram</span>
-                <span class="kr-pill outline">Hermes</span>
-              </div>
-              <p class="kr-piece-time">criado há 3h40</p>
-              <div class="kr-piece-actions">
-                <button type="button" class="kr-btn outline sm">Ver</button>
-                <button type="button" class="kr-btn primary sm">Aprovar</button>
+        <div class="kr-col">
+          <div class="kr-col-head"><span class="kr-col-title">Rascunho</span><span class="kr-col-count ambar">3</span></div>
+          <div class="kr-col-cards">
+            <article class="kr-card kr-piece">
+              <div class="kr-thumb"><img src="assets/creativos/saude.png" alt=""><span class="type"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17l5-5 3 3 4-5 4 5"/></svg>Carrossel</span><span class="ia">IA · rotulado</span></div>
+              <div class="kr-body">
+                <p class="kr-title">Carrossel: saúde na atenção básica</p>
+                <div class="kr-meta"><span class="kr-pill rosa">Instagram</span><span class="kr-pill outline">Hermes</span></div>
+                <p class="kr-time">criado há 3h40 · alinhado ao posicionamento</p>
+                <div class="kr-actions"><button class="kr-btn outline sm">Ver</button><button class="kr-btn primary sm">Aprovar</button></div>
               </div>
             </article>
-
-            <article class="kr-card kr-piece-card">
-              <div class="kr-piece-thumb">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-              </div>
-              <p class="kr-piece-title">Roteiro reels agenda da semana</p>
-              <div class="kr-piece-meta">
-                <span class="kr-pill escuro">TikTok</span>
-                <span class="kr-pill outline">Hermes</span>
-              </div>
-              <p class="kr-piece-time">criado há 5h12</p>
-              <div class="kr-piece-actions">
-                <button type="button" class="kr-btn outline sm">Ver</button>
-                <button type="button" class="kr-btn primary sm">Aprovar</button>
+            <article class="kr-card kr-piece">
+              <div class="kr-thumb"><img src="assets/creativos/comicio.png" alt=""><span class="type"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polygon points="6 4 20 12 6 20 6 4"/></svg>Reels</span><span class="ia">IA · rotulado</span></div>
+              <div class="kr-body">
+                <p class="kr-title">Roteiro de reels: agenda da semana</p>
+                <div class="kr-meta"><span class="kr-pill escuro">TikTok</span><span class="kr-pill outline">Hermes</span></div>
+                <p class="kr-time">criado há 5h12</p>
+                <div class="kr-actions"><button class="kr-btn outline sm">Ver</button><button class="kr-btn primary sm">Aprovar</button></div>
               </div>
             </article>
-
-            <article class="kr-card kr-piece-card">
-              <div class="kr-piece-thumb">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              </div>
-              <p class="kr-piece-title">Nota sobre mobilidade urbana</p>
-              <div class="kr-piece-meta">
-                <span class="kr-pill azul">Twitter/X</span>
-                <span class="kr-pill outline">Hermes</span>
-              </div>
-              <p class="kr-piece-time">criado há 6h</p>
-              <div class="kr-piece-actions">
-                <button type="button" class="kr-btn outline sm">Ver</button>
-                <button type="button" class="kr-btn primary sm">Aprovar</button>
+            <article class="kr-card kr-piece">
+              <div class="kr-thumb"><img src="assets/creativos/mobilidade.png" alt=""><span class="type"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 4h16v12H4z"/><path d="M4 8h16M8 12h6"/></svg>Nota</span><span class="ia">IA · rotulado</span></div>
+              <div class="kr-body">
+                <p class="kr-title">Nota sobre mobilidade urbana</p>
+                <div class="kr-meta"><span class="kr-pill azul">Twitter/X</span><span class="kr-pill outline">Hermes</span></div>
+                <p class="kr-time">criado há 6h</p>
+                <div class="kr-actions"><button class="kr-btn outline sm">Ver</button><button class="kr-btn primary sm">Aprovar</button></div>
               </div>
             </article>
-
           </div>
         </div>
 
-        <!-- coluna 2: aprovado -->
-        <div class="kr-kanban-col">
-          <div class="kr-kanban-head">
-            <span class="kr-kanban-title">Aprovado</span>
-            <span class="kr-pill verde tabular">2</span>
-          </div>
-          <div class="kr-kanban-cards">
-
-            <article class="kr-card kr-piece-card">
-              <div class="kr-piece-thumb">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-              </div>
-              <p class="kr-piece-title">Card proposta educação integral</p>
-              <div class="kr-piece-meta">
-                <span class="kr-pill rosa">Instagram</span>
-                <span class="kr-pill outline">Hermes</span>
-              </div>
-              <p class="kr-piece-badge tabular">Agendado para 25 jul 09:00</p>
-              <div class="kr-piece-actions">
-                <button type="button" class="kr-btn outline sm">Ver</button>
-                <button type="button" class="kr-btn primary sm">Publicar agora</button>
+        <div class="kr-col">
+          <div class="kr-col-head"><span class="kr-col-title">Aprovado</span><span class="kr-col-count verde">2</span></div>
+          <div class="kr-col-cards">
+            <article class="kr-card kr-piece">
+              <div class="kr-thumb"><img src="assets/creativos/educacao.png" alt=""><span class="type"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17l5-5 3 3 4-5 4 5"/></svg>Card</span></div>
+              <div class="kr-body">
+                <p class="kr-title">Card: proposta de educação integral</p>
+                <div class="kr-meta"><span class="kr-pill rosa">Instagram</span></div>
+                <span class="kr-sched"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Agendado · 25 jul 09:00</span>
+                <div class="kr-actions"><button class="kr-btn outline sm">Ver</button><button class="kr-btn primary sm">Publicar agora</button></div>
               </div>
             </article>
-
-            <article class="kr-card kr-piece-card">
-              <div class="kr-piece-thumb">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              </div>
-              <p class="kr-piece-title">Thread transparência de gastos</p>
-              <div class="kr-piece-meta">
-                <span class="kr-pill azul">Twitter/X</span>
-                <span class="kr-pill outline">Hermes</span>
-              </div>
-              <p class="kr-piece-badge tabular">Agendado para 25 jul 14:00</p>
-              <div class="kr-piece-actions">
-                <button type="button" class="kr-btn outline sm">Ver</button>
-                <button type="button" class="kr-btn primary sm">Publicar agora</button>
+            <article class="kr-card kr-piece">
+              <div class="kr-thumb"><img src="assets/creativos/transparencia.png" alt=""><span class="type"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Thread</span></div>
+              <div class="kr-body">
+                <p class="kr-title">Thread: transparência dos gastos</p>
+                <div class="kr-meta"><span class="kr-pill azul">Twitter/X</span></div>
+                <span class="kr-sched"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Agendado · 25 jul 14:00</span>
+                <div class="kr-actions"><button class="kr-btn outline sm">Ver</button><button class="kr-btn primary sm">Publicar agora</button></div>
               </div>
             </article>
-
           </div>
         </div>
 
-        <!-- coluna 3: publicado -->
-        <div class="kr-kanban-col">
-          <div class="kr-kanban-head">
-            <span class="kr-kanban-title">Publicado</span>
-            <span class="kr-pill outline tabular">3</span>
-          </div>
-          <div class="kr-kanban-cards">
-
-            <article class="kr-card kr-piece-card">
-              <div class="kr-piece-thumb">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        <div class="kr-col">
+          <div class="kr-col-head"><span class="kr-col-title">Publicado</span><span class="kr-col-count cinza">3</span></div>
+          <div class="kr-col-cards">
+            <article class="kr-card kr-piece">
+              <div class="kr-thumb"><img src="assets/creativos/hospital.png" alt=""><span class="type"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polygon points="6 4 20 12 6 20 6 4"/></svg>Vídeo</span></div>
+              <div class="kr-body">
+                <p class="kr-title">Vídeo: visita ao Hospital Regional</p>
+                <div class="kr-meta"><span class="kr-pill rosa">Instagram</span></div>
+                <div class="kr-stats"><span><b>3,2k</b> curtidas</span><span><b>214</b> coment.</span><span><b>18k</b> alcance</span></div>
+                <a class="kr-link" href="#">Ver desempenho →</a>
               </div>
-              <p class="kr-piece-title">Vídeo visita ao Hospital Regional</p>
-              <div class="kr-piece-meta">
-                <span class="kr-pill rosa">Instagram</span>
-                <span class="kr-pill outline">Hermes</span>
-              </div>
-              <p class="kr-piece-stats"><span class="tabular">3,2k</span> curtidas · <span class="tabular">214</span> coment · <span class="tabular">18k</span> alcance</p>
-              <a href="#" class="kr-piece-link">Ver desempenho →</a>
             </article>
-
-            <article class="kr-card kr-piece-card">
-              <div class="kr-piece-thumb">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H4z"/><path d="M4 4v16"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/></svg>
+            <article class="kr-card kr-piece">
+              <div class="kr-thumb"><img src="assets/creativos/seguranca.png" alt=""><span class="type"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 4h16v12H4z"/><path d="M4 8h16M8 12h6"/></svg>Release</span></div>
+              <div class="kr-body">
+                <p class="kr-title">Release: plano de segurança</p>
+                <div class="kr-meta"><span class="kr-pill verde">Imprensa</span></div>
+                <div class="kr-stats"><span><b>8</b> veículos</span><span><b>42k</b> alcance</span></div>
+                <a class="kr-link" href="#">Ver desempenho →</a>
               </div>
-              <p class="kr-piece-title">Release plano de segurança</p>
-              <div class="kr-piece-meta">
-                <span class="kr-pill verde">Imprensa</span>
-                <span class="kr-pill outline">Hermes</span>
-              </div>
-              <p class="kr-piece-stats"><span class="tabular">8</span> veículos · <span class="tabular">42k</span> alcance</p>
-              <a href="#" class="kr-piece-link">Ver desempenho →</a>
             </article>
-
-            <article class="kr-card kr-piece-card">
-              <div class="kr-piece-thumb">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <article class="kr-card kr-piece">
+              <div class="kr-thumb"><img src="assets/creativos/bastidores.png" alt=""><span class="type"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Story</span></div>
+              <div class="kr-body">
+                <p class="kr-title">Story: bastidores do comício</p>
+                <div class="kr-meta"><span class="kr-pill rosa">Instagram</span></div>
+                <div class="kr-stats"><span><b>1,9k</b> curtidas</span><span><b>12k</b> alcance</span></div>
+                <a class="kr-link" href="#">Ver desempenho →</a>
               </div>
-              <p class="kr-piece-title">Story bastidores comício</p>
-              <div class="kr-piece-meta">
-                <span class="kr-pill rosa">Instagram</span>
-                <span class="kr-pill outline">Hermes</span>
-              </div>
-              <p class="kr-piece-stats"><span class="tabular">1,9k</span> curtidas · <span class="tabular">12k</span> alcance</p>
-              <a href="#" class="kr-piece-link">Ver desempenho →</a>
             </article>
-
           </div>
         </div>
 
       </section>
 
-      <!-- calendário editorial -->
-      <section class="kr-card">
+      <div class="kr-card">
         <p class="kr-card-title">Calendário editorial</p>
-        <div class="kr-mini-cal">
-          <div class="kr-cal-day">
-            <p class="wd">Seg</p>
-            <p class="dt tabular">20</p>
-            <div class="kr-cal-dots"></div>
-          </div>
-          <div class="kr-cal-day">
-            <p class="wd">Ter</p>
-            <p class="dt tabular">21</p>
-            <div class="kr-cal-dots"><span class="kr-cal-dot" style="background:var(--preto);"></span></div>
-          </div>
-          <div class="kr-cal-day">
-            <p class="wd">Qua</p>
-            <p class="dt tabular">22</p>
-            <div class="kr-cal-dots"><span class="kr-cal-dot" style="background:var(--pill-rosa);"></span></div>
-          </div>
-          <div class="kr-cal-day">
-            <p class="wd">Qui</p>
-            <p class="dt tabular">23</p>
-            <div class="kr-cal-dots"><span class="kr-cal-dot" style="background:var(--pill-azul);"></span></div>
-          </div>
-          <div class="kr-cal-day today">
-            <p class="wd">Sex</p>
-            <p class="dt tabular">24</p>
-            <div class="kr-cal-dots"><span class="kr-cal-dot" style="background:var(--coral-suave);"></span></div>
-          </div>
-          <div class="kr-cal-day">
-            <p class="wd">Sáb</p>
-            <p class="dt tabular">25</p>
-            <div class="kr-cal-dots">
-              <span class="kr-cal-dot" style="background:var(--pill-rosa);"></span>
-              <span class="kr-cal-dot" style="background:var(--pill-azul);"></span>
-            </div>
-          </div>
-          <div class="kr-cal-day">
-            <p class="wd">Dom</p>
-            <p class="dt tabular">26</p>
-            <div class="kr-cal-dots"></div>
-          </div>
+        <div class="kr-cal">
+          <div class="kr-cal-day"><div class="kr-cal-wd">Seg</div><div class="kr-cal-dt tabular">20</div><div class="kr-cal-dots"></div></div>
+          <div class="kr-cal-day"><div class="kr-cal-wd">Ter</div><div class="kr-cal-dt tabular">21</div><div class="kr-cal-dots"><span class="kr-cal-dot" style="background:#101010;"></span></div></div>
+          <div class="kr-cal-day"><div class="kr-cal-wd">Qua</div><div class="kr-cal-dt tabular">22</div><div class="kr-cal-dots"><span class="kr-cal-dot" style="background:var(--coral-suave);"></span></div></div>
+          <div class="kr-cal-day"><div class="kr-cal-wd">Qui</div><div class="kr-cal-dt tabular">23</div><div class="kr-cal-dots"><span class="kr-cal-dot" style="background:var(--pill-azul);"></span></div></div>
+          <div class="kr-cal-day today"><div class="kr-cal-wd">Sex</div><div class="kr-cal-dt tabular">24</div><div class="kr-cal-dots"><span class="kr-cal-dot" style="background:var(--coral);"></span></div></div>
+          <div class="kr-cal-day"><div class="kr-cal-wd">Sáb</div><div class="kr-cal-dt tabular">25</div><div class="kr-cal-dots"><span class="kr-cal-dot" style="background:var(--coral-suave);"></span><span class="kr-cal-dot" style="background:var(--pill-azul);"></span></div></div>
+          <div class="kr-cal-day"><div class="kr-cal-wd">Dom</div><div class="kr-cal-dt tabular">26</div><div class="kr-cal-dots"></div></div>
         </div>
         <div class="kr-cal-legend">
-          <span><span class="sw" style="background:var(--pill-rosa);"></span>Instagram</span>
+          <span><span class="sw" style="background:var(--coral-suave);"></span>Instagram</span>
           <span><span class="sw" style="background:var(--pill-azul);"></span>Twitter/X</span>
-          <span><span class="sw" style="background:var(--preto);"></span>TikTok</span>
-          <span><span class="sw" style="background:var(--pill-verde);"></span>Release imprensa</span>
-          <span><span class="sw" style="background:var(--coral-suave);"></span>Discurso</span>
+          <span><span class="sw" style="background:#101010;"></span>TikTok</span>
+          <span><span class="sw" style="background:var(--verde);"></span>Release imprensa</span>
+          <span><span class="sw" style="background:var(--coral);"></span>Discurso</span>
         </div>
-      </section>
+      </div>
 
-      <div class="kr-footer">
+      <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:16px;font-size:var(--t-sm);color:var(--muted);">
         <span>Cérebro: kratos-cerebro-piloto-2026/conteudo · commit 9a3f2e</span>
         <span>Todas as peças com rótulo de IA aplicado · compliance 2026</span>
       </div>
-
     </main>
   </div>
 </div>
-
 <script src="assets/demo-guide.js" defer></script>
 </body>
 </html>
