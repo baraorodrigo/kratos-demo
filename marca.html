@@ -1,0 +1,84 @@
+<!doctype html><meta charset="utf8">
+<link rel="stylesheet" href="assets/kratos-fonts.css">
+<style>
+  :root{--coral:#dc5b48;--base:#f6ede9;--preto:#101010;--white:#fdf9f6;--muted:#8a7a76;--border:#eee0da;}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Plus Jakarta Sans",sans-serif;}
+  body{background:var(--base);color:#1c1c1c;padding:40px 44px;}
+  h1{font-size:30px;font-weight:800;letter-spacing:-.02em;}
+  .sub{color:var(--muted);font-size:15px;margin:6px 0 30px;max-width:70ch;}
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:26px;}
+  .cname{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--coral);margin-bottom:4px;}
+  .cdesc{font-size:13px;color:var(--muted);line-height:1.4;min-height:38px;margin-bottom:20px;}
+  .big{display:flex;justify-content:center;align-items:center;height:170px;background:var(--base);border-radius:14px;margin-bottom:18px;}
+  .apps{display:flex;align-items:center;gap:18px;justify-content:center;padding-top:4px;border-top:1px dashed var(--border);}
+  .apps .lab{font-size:9.5px;color:var(--muted);text-align:center;margin-top:5px;font-weight:600;letter-spacing:.04em;}
+  .apps .col{display:flex;flex-direction:column;align-items:center;}
+  /* badges */
+  .badge{border-radius:26px;display:flex;align-items:center;justify-content:center;}
+  .b-coral{background:var(--coral);color:#fff;}
+  .b-dark{background:var(--preto);}
+  .kfont{font-weight:800;line-height:1;}
+  .side{display:flex;align-items:center;gap:9px;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:7px 12px;}
+  .side .wm{font-weight:800;font-size:16px;letter-spacing:-.01em;}
+  .swatches{display:flex;gap:10px;margin-top:30px;flex-wrap:wrap;}
+  .sw{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);font-weight:600;}
+  .chip{width:26px;height:26px;border-radius:8px;border:1px solid rgba(0,0,0,.08);}
+</style>
+<h1>Kratos — direção de marca</h1>
+<div class="sub">Personalidade: <b>força tranquila</b> — coral quente + peso e gravidade. Três direções pro símbolo (o mark que falta: favicon, avatar, ícone). Escolha uma direção; eu refino e aplico no sistema.</div>
+
+<div class="row">
+
+  <!-- A: badge coral + K -->
+  <div class="card">
+    <div class="cname">A · Badge coral</div>
+    <div class="cdesc">O jeito app/premium (Linear, Vercel). O "K" branco vazado num quadrado coral arredondado. Máxima usabilidade e calor.</div>
+    <div class="big">
+      <div class="badge b-coral" style="width:112px;height:112px;"><span class="kfont" style="font-size:74px;">K</span></div>
+    </div>
+    <div class="apps">
+      <div class="col"><div class="badge b-coral" style="width:30px;height:30px;"><span class="kfont" style="font-size:19px;">K</span></div><div class="lab">favicon</div></div>
+      <div class="col"><div class="badge b-coral" style="width:40px;height:40px;border-radius:50%;"><span class="kfont" style="font-size:24px;">K</span></div><div class="lab">avatar</div></div>
+      <div class="col"><div class="side"><div class="badge b-coral" style="width:26px;height:26px;border-radius:8px;"><span class="kfont" style="font-size:16px;">K</span></div><span class="wm">Kratos</span></div><div class="lab">sidebar</div></div>
+    </div>
+  </div>
+
+  <!-- B: badge preto + K coral -->
+  <div class="card">
+    <div class="cname">B · Badge preto</div>
+    <div class="cdesc">Mais força e gravidade. Fundo preto (o "dark card" premium do sistema), "K" coral. Sério, caro, confiante.</div>
+    <div class="big">
+      <div class="badge b-dark" style="width:112px;height:112px;"><span class="kfont" style="font-size:74px;color:var(--coral);">K</span></div>
+    </div>
+    <div class="apps">
+      <div class="col"><div class="badge b-dark" style="width:30px;height:30px;"><span class="kfont" style="font-size:19px;color:var(--coral);">K</span></div><div class="lab">favicon</div></div>
+      <div class="col"><div class="badge b-dark" style="width:40px;height:40px;border-radius:50%;"><span class="kfont" style="font-size:24px;color:var(--coral);">K</span></div><div class="lab">avatar</div></div>
+      <div class="col"><div class="side"><div class="badge b-dark" style="width:26px;height:26px;border-radius:8px;"><span class="kfont" style="font-size:16px;color:var(--coral);">K</span></div><span class="wm">Kratos</span></div><div class="lab">sidebar</div></div>
+    </div>
+  </div>
+
+  <!-- C: símbolo angular existente -->
+  <div class="card">
+    <div class="cname">C · Símbolo próprio</div>
+    <div class="cdesc">O mark angular que já existe no seu logo, isolado e reforçado em coral. Mais distintivo/ownable — não é "só uma letra".</div>
+    <div class="big">
+      <div class="badge b-dark" style="width:112px;height:112px;">
+        <svg viewBox="120 175 245 400" width="66" height="108"><path fill="#dc5b48" d="M 249 184 L 212 222 L 280 290 L 177 255 L 136 297 L 272 346 L 130 347 L 129 402 L 272 403 L 142 451 L 180 492 L 280 460 L 213 526 L 253 565 L 354 464 L 352 404 L 336 384 L 316 376 L 336 368 L 351 351 L 354 287 Z"/></svg>
+      </div>
+    </div>
+    <div class="apps">
+      <div class="col"><div class="badge b-dark" style="width:30px;height:30px;"><svg viewBox="120 175 245 400" width="17" height="28"><path fill="#dc5b48" d="M 249 184 L 212 222 L 280 290 L 177 255 L 136 297 L 272 346 L 130 347 L 129 402 L 272 403 L 142 451 L 180 492 L 280 460 L 213 526 L 253 565 L 354 464 L 352 404 L 336 384 L 316 376 L 336 368 L 351 351 L 354 287 Z"/></svg></div><div class="lab">favicon</div></div>
+      <div class="col"><div class="badge b-coral" style="width:40px;height:40px;border-radius:50%;"><svg viewBox="120 175 245 400" width="22" height="36"><path fill="#fff" d="M 249 184 L 212 222 L 280 290 L 177 255 L 136 297 L 272 346 L 130 347 L 129 402 L 272 403 L 142 451 L 180 492 L 280 460 L 213 526 L 253 565 L 354 464 L 352 404 L 336 384 L 316 376 L 336 368 L 351 351 L 354 287 Z"/></svg></div><div class="lab">avatar</div></div>
+      <div class="col"><div class="side"><svg viewBox="120 175 245 400" width="16" height="26"><path fill="#dc5b48" d="M 249 184 L 212 222 L 280 290 L 177 255 L 136 297 L 272 346 L 130 347 L 129 402 L 272 403 L 142 451 L 180 492 L 280 460 L 213 526 L 253 565 L 354 464 L 352 404 L 336 384 L 316 376 L 336 368 L 351 351 L 354 287 Z"/></svg><span class="wm">Kratos</span></div><div class="lab">sidebar</div></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="swatches">
+  <div class="sw"><span class="chip" style="background:#dc5b48;"></span>Coral #dc5b48</div>
+  <div class="sw"><span class="chip" style="background:#101010;"></span>Preto #101010</div>
+  <div class="sw"><span class="chip" style="background:#f6ede9;"></span>Rosé #f6ede9</div>
+  <div class="sw"><span class="chip" style="background:#eaa89b;"></span>Coral suave</div>
+</div>
