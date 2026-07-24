@@ -1,0 +1,126 @@
+<!doctype html><meta charset="utf8">
+<title>Kratos — tema do candidato</title>
+<link rel="stylesheet" href="assets/kratos-fonts.css">
+<style>
+  :root{
+    --accent:#1f5fd6;
+    --accent-soft:color-mix(in srgb, var(--accent) 13%, #fff);
+    --accent-tint:color-mix(in srgb, var(--accent) 7%, #fff);
+    --accent-hover:color-mix(in srgb, var(--accent) 86%, #000);
+    --accent-ink:color-mix(in srgb, var(--accent) 62%, #000);
+    --bg:#f4f2ef; --surf:#fff; --text:#1a1712; --muted:#8c8279; --line:#ece6e0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Plus Jakarta Sans",sans-serif;}
+  body{background:#e7e4df;color:var(--text);}
+  /* barra de controle */
+  .ctl{position:sticky;top:0;z-index:5;background:#141210;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  .ctl .t{font-weight:800;font-size:15px;}
+  .ctl .lab{font-size:12px;color:#b7aca4;font-weight:600;margin-left:6px;}
+  .sw{display:flex;gap:7px;align-items:center;}
+  .sw button{width:26px;height:26px;border-radius:8px;border:2px solid transparent;cursor:pointer;padding:0;transition:transform .12s;}
+  .sw button:hover{transform:scale(1.12);}
+  .sw button.on{border-color:#fff;}
+  .sw .cust{display:flex;align-items:center;gap:6px;margin-left:8px;font-size:11.5px;color:#b7aca4;font-weight:600;}
+  .sw input[type=color]{width:30px;height:26px;border:none;border-radius:8px;background:none;cursor:pointer;padding:0;}
+  .hint{font-size:11.5px;color:#b7aca4;margin-left:auto;}
+  /* app */
+  .app{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 52px);}
+  .side{background:var(--surf);border-right:1px solid var(--line);padding:16px 13px;display:flex;flex-direction:column;gap:4px;}
+  .brand{display:flex;align-items:center;gap:9px;padding:4px 6px 14px;}
+  .brand .mk{width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;}
+  .brand .wm{font-weight:800;font-size:17px;letter-spacing:-.01em;}
+  .nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;font-size:13px;font-weight:600;color:var(--text);text-decoration:none;cursor:pointer;}
+  .nav a .ic{width:26px;height:26px;border-radius:8px;background:var(--surf);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;}
+  .nav a:hover{background:#faf7f4;}
+  .nav a.on{background:var(--accent-tint);color:var(--accent-ink);}
+  .nav a.on .ic{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .main{padding:22px 26px;overflow:auto;}
+  .htop{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px;}
+  .h1{font-size:26px;font-weight:800;}
+  .hsub{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .btn{font-size:12.5px;font-weight:700;padding:9px 18px;border-radius:99px;border:none;background:var(--accent);color:#fff;cursor:pointer;}
+  .btn:hover{background:var(--accent-hover);}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
+  .card{background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:18px;}
+  .lab{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .num{font-size:30px;font-weight:800;line-height:1.1;margin:4px 0 2px;}
+  .trend{font-size:11.5px;font-weight:800;color:var(--accent);}
+  .trend.down{color:#c23b3b;}
+  .big{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;}
+  .chart{background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:18px;}
+  .ct{font-size:13px;font-weight:700;margin-bottom:14px;}
+  .bars{display:flex;align-items:flex-end;gap:7px;height:120px;}
+  .bars i{flex:1;background:var(--accent-soft);border-radius:5px 5px 0 0;}
+  .bars i.hi{background:var(--accent);}
+  .list .li{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:12.5px;}
+  .list .li:last-child{border:none;}
+  .pill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent-ink);}
+  .pill.n{background:var(--line);color:var(--muted);}
+  .avatar{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+</style>
+
+<div class="ctl">
+  <span class="t">Kratos</span><span class="lab">tema do candidato — clique numa cor:</span>
+  <div class="sw" id="sw">
+    <button data-c="#1f5fd6" style="background:#1f5fd6"></button>
+    <button data-c="#159b48" style="background:#159b48"></button>
+    <button data-c="#e02424" style="background:#e02424"></button>
+    <button data-c="#ef6c1a" style="background:#ef6c1a"></button>
+    <button data-c="#0f857a" style="background:#0f857a"></button>
+    <button data-c="#7a2ff2" style="background:#7a2ff2"></button>
+    <button data-c="#d6336c" style="background:#d6336c"></button>
+    <button data-c="#dc5b48" style="background:#dc5b48"></button>
+    <span class="cust">ou a cor exata: <input type="color" id="pick" value="#1f5fd6"></span>
+  </div>
+  <span class="hint">o fundo fica neutro · a cor só nos acentos = não cansa</span>
+</div>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand"><span class="mk" id="mk">K</span><span class="wm">Kratos</span></div>
+    <div class="nav">
+      <a class="on"><span class="ic">◧</span>Comando</a>
+      <a><span class="ic">$</span>Financeiro</a>
+      <a><span class="ic">§</span>Jurídico</a>
+      <a><span class="ic">✎</span>Conteúdo</a>
+      <a><span class="ic">◉</span>Território</a>
+      <a><span class="ic">◔</span>Pesquisa</a>
+      <a><span class="ic">◎</span>Monitoramento</a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="htop">
+      <div><div class="h1">Comando</div><div class="hsub">Mariana Costa · Deputada Federal · SC</div></div>
+      <button class="btn">Aprovar publicação</button>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="lab">Intenção de voto</div><div class="num">34%</div><div class="trend">▲ 2,1 pts na semana</div></div>
+      <div class="card"><div class="lab">Menções nas redes</div><div class="num">2.147</div><div class="trend">▲ hoje</div></div>
+      <div class="card"><div class="lab">Teto do TSE</div><div class="num">62%</div><div class="trend down">R$ 234 mil livres</div></div>
+    </div>
+    <div class="big">
+      <div class="chart">
+        <div class="ct">Menções nas redes · 14 dias</div>
+        <div class="bars"><i></i><i></i><i class="hi"></i><i></i><i></i><i class="hi"></i><i></i><i></i><i class="hi"></i><i></i><i class="hi"></i><i></i><i></i><i class="hi"></i></div>
+      </div>
+      <div class="chart">
+        <div class="ct">Lideranças ativas</div>
+        <div class="list">
+          <div class="li"><span><span class="avatar" style="display:inline-flex;vertical-align:middle;margin-right:8px;">R</span>Raul Hoffmann</span><span class="pill">forte</span></div>
+          <div class="li"><span><span class="avatar" style="display:inline-flex;vertical-align:middle;margin-right:8px;">S</span>Sandra Bianchi</span><span class="pill">forte</span></div>
+          <div class="li"><span><span class="avatar" style="display:inline-flex;vertical-align:middle;margin-right:8px;">P</span>Paulo D.</span><span class="pill n">média</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  var root=document.documentElement, sw=document.getElementById('sw'), pick=document.getElementById('pick');
+  function setC(c){ root.style.setProperty('--accent', c); pick.value=c;
+    [].forEach.call(sw.querySelectorAll('button'),function(b){ b.classList.toggle('on', b.dataset.c && b.dataset.c.toLowerCase()===c.toLowerCase()); });
+  }
+  sw.addEventListener('click',function(e){ var b=e.target.closest('button'); if(b&&b.dataset.c) setC(b.dataset.c); });
+  pick.addEventListener('input',function(){ setC(pick.value); });
+  setC('#1f5fd6');
+</script>
