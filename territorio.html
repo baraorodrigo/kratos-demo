@@ -284,7 +284,7 @@
 
   function xyOf(l){ if(l._xy) return l._xy; var p=SC.proj(l.lon,l.lat); l._xy=p; return p; }
   function regTotal(m){ return LIDERES.filter(function(l){return l.meso===m;}).reduce(function(s,l){return s+l.votos;},0); }
-  function regColor(t){ if(t===0)return getVar("--base"); if(t<10000)return "#f3c4b8"; if(t<20000)return "#dc5b48"; return "#101010"; }
+  function regColor(t){ if(t===0)return getVar("--base"); if(t<10000)return "var(--pill-rosa)"; if(t<20000)return "var(--coral)"; return "#101010"; }
   function getVar(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||"#f6ede9"; }
 
   function drawMap(){
@@ -303,7 +303,7 @@
     SC.regions.forEach(function(r){
       var t=document.createElementNS(SVGNS,"text");
       t.setAttribute("x",r.c[0]); t.setAttribute("y",r.c[1]); t.setAttribute("text-anchor","middle");
-      var dark=regTotal(r.meso)>=20000 || (regColor(regTotal(r.meso))==="#dc5b48");
+      var dark=regTotal(r.meso)>=20000 || (regColor(regTotal(r.meso))==="var(--coral)");
       t.setAttribute("fill", dark?"#fff":"#1c1c1c");
       t.setAttribute("class","kr-map-lbl"+(selMeso&&selMeso!==r.meso?" dim":""));
       t.setAttribute("opacity","0.92"); t.textContent=r.label;

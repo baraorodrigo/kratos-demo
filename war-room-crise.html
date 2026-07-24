@@ -11,12 +11,12 @@
     --base:#f6ede9;
     --surface:#fdf9f6;
     --preto:#101010;
-    --coral-suave:#eaa89b;
-    --coral:#dc5b48;
-    --coral-hover:#c94e3c;
+    --coral-suave:var(--coral-suave);
+    --coral:var(--coral);
+    --coral-hover:var(--coral-hover);
     --verde:#7cc47c;
     --vermelho:#e05555;
-    --pill-rosa:#f3c4b8;
+    --pill-rosa:var(--pill-rosa);
     --pill-verde:#a7d5a7;
     --pill-azul:#a5c8e5;
     --pill-ambar:#f5d59c;
@@ -607,10 +607,10 @@
               <svg viewBox="0 0 560 180" width="100%" height="100%" preserveAspectRatio="none">
                 <!-- área preenchida -->
                 <polygon points="0,150 70,148 140,140 210,120 280,60 350,20 420,15 490,10 560,8 560,180 0,180"
-                  fill="#dc5b48" opacity="0.15"/>
+                  fill="var(--coral)" opacity="0.15"/>
                 <!-- linha -->
                 <polyline points="0,150 70,148 140,140 210,120 280,60 350,20 420,15 490,10 560,8"
-                  fill="none" stroke="#dc5b48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  fill="none" stroke="var(--coral)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                 <!-- marcador post origem -->
                 <line x1="70" y1="0" x2="70" y2="180" stroke="#8a7a76" stroke-width="1" stroke-dasharray="3,3"/>
                 <text x="76" y="16" font-size="10" fill="#8a7a76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">post origem 04:12</text>

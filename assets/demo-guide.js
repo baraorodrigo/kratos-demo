@@ -5,6 +5,19 @@
 (function () {
   "use strict";
 
+  // ---- Tema do candidato (paleta configurável pelo admin) ----
+  // Prioridade: parâmetros na URL (?primary=&secondary=) > paleta salva (localStorage).
+  try {
+    var qs = new URLSearchParams(location.search);
+    var pri = qs.get("primary"), sec = qs.get("secondary");
+    if (!pri) {
+      var saved = JSON.parse(localStorage.getItem("kratos-palette") || "null");
+      if (saved) { pri = saved.primary; sec = saved.secondary; }
+    }
+    if (pri) document.documentElement.style.setProperty("--primary", pri);
+    if (sec) document.documentElement.style.setProperty("--secondary", sec);
+  } catch (e) {}
+
   // Conteúdo por tela (chave = nome do arquivo)
   var GUIA = {
     "home.html": {

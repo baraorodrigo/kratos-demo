@@ -7,16 +7,30 @@
 @import url("kratos-fonts.css");
 
 :root {
-  /* Cores */
-  --base: #f6ede9;
-  --white: #fdf9f6;
+  /* ===== TEMA DO CANDIDATO — o admin configura no setup =====
+     Troque --primary e --secondary pela paleta do candidato.
+     Todo o resto (soft/hover/ink) deriva sozinho e continua harmônico. */
+  --primary: #dc5b48;      /* padrão = coral Kratos */
+  --secondary: #e0a020;
+  --p-soft:  color-mix(in srgb, var(--primary) 14%, #fff);
+  --p-tint:  color-mix(in srgb, var(--primary) 8%, #fff);
+  --p-hover: color-mix(in srgb, var(--primary) 87%, #000);
+  --p-ink:   color-mix(in srgb, var(--primary) 60%, #000);
+  --s-soft:  color-mix(in srgb, var(--secondary) 16%, #fff);
+  --s-ink:   color-mix(in srgb, var(--secondary) 58%, #000);
+
+  /* Cores base (neutras fixas) */
+  --base: #f4f2ef;
+  --white: #fdfbf9;
   --preto: #101010;
-  --coral-suave: #eaa89b;
-  --coral: #dc5b48;
-  --coral-hover: #c94e3c;
+  /* tokens de marca agora derivam do tema do candidato */
+  --coral: var(--primary);
+  --coral-suave: color-mix(in srgb, var(--primary) 42%, #fff);
+  --coral-hover: var(--p-hover);
+  --pill-rosa: var(--p-soft);
+  /* ===== SIGNIFICADO — FIXO, nunca muda com a paleta ===== */
   --verde: #7cc47c;
   --vermelho: #e05555;
-  --pill-rosa: #f3c4b8;
   --pill-verde: #a7d5a7;
   --pill-azul: #a5c8e5;
   --pill-ambar: #f5d59c;
@@ -128,7 +142,7 @@ body {
 /* ---------- pills & buttons ---------- */
 .kr-pill { display:inline-flex; align-items:center; gap:5px; padding:3px 11px; border-radius:999px; font-size:11px; font-weight:600; white-space:nowrap; }
 .kr-pill.mono { font-family:var(--font-mono); background:var(--border); color:var(--muted); }
-.kr-pill.rosa { background:var(--pill-rosa); color:#8a3c2c; }
+.kr-pill.rosa { background:var(--pill-rosa); color:var(--p-ink); }
 .kr-pill.verde { background:var(--pill-verde); color:#2c6e2c; }
 .kr-pill.azul { background:var(--pill-azul); color:#274a63; }
 .kr-pill.ambar { background:var(--pill-ambar); color:#7a5a10; }
