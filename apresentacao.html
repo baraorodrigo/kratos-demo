@@ -142,6 +142,12 @@
   .acard .ai{width:32px;height:32px;border-radius:9px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;}
   .acard .an{font-size:13.5px;font-weight:700;} .acard .ad{font-size:11.5px;color:var(--muted);line-height:1.3;margin-top:1px;}
 
+  /* roster compacto (cérebro + agentes fundidos) */
+  .roster{display:flex;flex-direction:column;gap:9px;margin-top:6px;}
+  .roster .ritem{display:flex;align-items:center;gap:10px;font-size:13.5px;color:#d8ccc2;}
+  .roster .ritem b{color:#fff;font-weight:700;}
+  .roster .ri{width:25px;height:25px;border-radius:7px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:12px;}
+
   /* timeline */
   .tline{display:flex;flex-direction:column;gap:2px;}
   .titem{display:grid;grid-template-columns:82px 1fr;gap:15px;padding:12px 0;border-bottom:1px solid var(--border);}
@@ -397,36 +403,27 @@
     </div>
   </section>
 
-  <!-- 14 O CEREBRO (novo: imagem-assinatura) -->
+  <!-- 14 O CEREBRO + os 7 agentes (fundido) -->
   <section class="slide dark">
     <div class="slide-inner cols">
       <div>
         <div class="eyebrow rise">O cérebro</div>
         <h1 class="head rise">Não são sete ferramentas soltas. É um cérebro só.</h1>
-        <p class="body rise">Cada agente sabe o que o outro sabe. O financeiro conversa com o jurídico, o território com a comunicação, o monitoramento com a estratégia. Uma informação entra num canto e atravessa a campanha inteira — coordenada por uma inteligência central que nunca dorme.</p>
-        <div class="fecho rise">Tudo conversa com tudo. <span class="hl">Uma inteligência só, coordenando a sua campanha.</span></div>
+        <p class="body rise" style="margin-bottom:12px;">Sete especialistas que sabem o que o outro sabe, coordenados por uma inteligência central que nunca dorme:</p>
+        <div class="roster rise">
+          <div class="ritem"><span class="ri" style="background:#1c1c1c;">S</span><span><b>Strategos</b> — o diretor</span></div>
+          <div class="ritem"><span class="ri" style="background:#3a7a3a;">D</span><span><b>Drachma</b> — o financeiro</span></div>
+          <div class="ritem"><span class="ri" style="background:#8b6fc9;">N</span><span><b>Nomos</b> — o jurídico</span></div>
+          <div class="ritem"><span class="ri" style="background:var(--coral);">H</span><span><b>Hermes</b> — a comunicação</span></div>
+          <div class="ritem"><span class="ri" style="background:#c98a1e;">P</span><span><b>Polis</b> — o território</span></div>
+          <div class="ritem"><span class="ri" style="background:#5c9ad1;">A</span><span><b>Athena</b> — a pesquisa</span></div>
+          <div class="ritem"><span class="ri" style="background:var(--vermelho);">A</span><span><b>Argos</b> — o vigia das redes</span></div>
+        </div>
       </div>
       <div class="rise">
-        <div class="conceptframe"><img src="assets/conceitos/cerebro.png" alt="O cérebro da campanha coordenando as informações"></div>
+        <div class="conceptframe"><img src="assets/conceitos/cerebro.png" alt="O cérebro da campanha coordenando os sete agentes"></div>
+        <div class="shotcap" style="margin-top:12px;">Uma equipe de elite que não tira folga, não pede aumento e nunca dorme.</div>
       </div>
-    </div>
-  </section>
-
-  <!-- 15 AGENTES -->
-  <section class="slide light">
-    <div class="slide-inner">
-      <div class="eyebrow rise">As partes do cérebro</div>
-      <h1 class="head rise">Cada parte desse cérebro tem um nome.</h1>
-      <div class="agrid rise">
-        <div class="acard"><span class="ai" style="background:#1c1c1c;">S</span><div><div class="an">Strategos — o diretor</div><div class="ad">Vê o jogo inteiro e diz o próximo passo.</div></div></div>
-        <div class="acard"><span class="ai" style="background:#3a7a3a;">D</span><div><div class="an">Drachma — o financeiro</div><div class="ad">Cada centavo no lugar, o teto sob controle.</div></div></div>
-        <div class="acard"><span class="ai" style="background:#8b6fc9;">N</span><div><div class="an">Nomos — o conselheiro</div><div class="ad">Te diz o que pode, pra você não errar.</div></div></div>
-        <div class="acard"><span class="ai" style="background:var(--coral);">H</span><div><div class="an">Hermes — a comunicação</div><div class="ad">Conteúdo e mensagem, na voz e na hora certa.</div></div></div>
-        <div class="acard"><span class="ai" style="background:#c98a1e;">P</span><div><div class="an">Polis — o território</div><div class="ad">Cada bairro, cada demanda, cada base mapeada.</div></div></div>
-        <div class="acard"><span class="ai" style="background:#5c9ad1;">A</span><div><div class="an">Athena — a inteligência</div><div class="ad">Pesquisa, dados e o número que decide.</div></div></div>
-        <div class="acard" style="grid-column:1/-1;"><span class="ai" style="background:var(--vermelho);">A</span><div><div class="an">Argos — o vigia</div><div class="ad">Enxerga tudo nas redes e soa o alarme antes da crise.</div></div></div>
-      </div>
-      <div class="fecho rise">Uma equipe de elite que não tira folga, não pede aumento e <span class="hl">nunca dorme.</span></div>
     </div>
   </section>
 
@@ -480,7 +477,7 @@
 
 <div class="clickzone left" id="zleft"></div>
 <div class="clickzone right" id="zright"></div>
-<div class="counter"><span id="cur">01</span> / <span id="tot">18</span></div>
+<div class="counter"><span id="cur">01</span> / <span id="tot">17</span></div>
 <div class="brandmark">Kratos</div>
 <div class="nav">
   <button id="prev" aria-label="Anterior">‹</button>
