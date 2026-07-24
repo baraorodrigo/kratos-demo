@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comando · Kratos</title>
+<link rel="stylesheet" href="assets/kratos-ui.css">
+<style>
+/* ---------- home / comando — só o que o CSS compartilhado não cobre ---------- */
+
+.kr-hero-top { display:grid; grid-template-columns:4fr 2fr 2fr 2fr 2fr; gap:16px; margin-bottom:16px; }
+
+.kr-count-card { display:flex; flex-direction:column; justify-content:space-between; min-height:210px; }
+.kr-count-deco { position:absolute; background:var(--coral); pointer-events:none; }
+.kr-count-deco.a { width:200px; height:200px; top:-90px; right:-70px; border-radius:44px; transform:rotate(22deg); opacity:.16; }
+.kr-count-deco.b { width:120px; height:120px; top:60px; right:-45px; border-radius:28px; transform:rotate(-10deg); opacity:.22; }
+.kr-count-deco.c { width:64px; height:64px; bottom:-16px; right:70px; border-radius:50%; opacity:.14; }
+.kr-count-label { position:relative; z-index:1; font-size:var(--t-sm); color:rgba(255,255,255,.72); font-weight:500; }
+.kr-count-num { position:relative; z-index:1; font-size:var(--t-hero); font-weight:800; line-height:.94; margin:6px 0 16px; }
+.kr-count-foot { position:relative; z-index:1; }
+
+.kr-metric-card { display:flex; flex-direction:column; gap:7px; justify-content:space-between; }
+.kr-metric-sub { font-size:var(--t-xs); color:var(--muted); }
+.kr-progress { height:6px; border-radius:var(--r-full); background:var(--border); overflow:hidden; margin:2px 0; }
+.kr-progress-fill { height:100%; border-radius:var(--r-full); background:var(--pill-ambar); }
+
+.kr-chart-card { margin-bottom:16px; }
+.kr-chart-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.kr-chart-num { display:flex; align-items:baseline; gap:10px; margin-bottom:16px; }
+.kr-chart-svg { display:block; width:100%; height:auto; }
+.kr-chart-axis { display:flex; justify-content:space-between; margin-top:8px; font-size:var(--t-xs); color:var(--muted); }
+
+.kr-row-3 { grid-template-columns:repeat(3, 1fr); margin-bottom:16px; }
+
+.kr-list { display:flex; flex-direction:column; gap:13px; }
+.kr-list-row { display:flex; align-items:center; gap:10px; }
+.kr-list-name { font-size:var(--t-sm); font-weight:500; width:82px; flex:none; }
+.kr-list-track { flex:1; height:6px; border-radius:var(--r-full); background:var(--border); overflow:hidden; }
+.kr-list-fill { height:100%; border-radius:var(--r-full); background:var(--coral); }
+.kr-list-count { font-size:var(--t-sm); font-weight:600; width:22px; text-align:right; flex:none; }
+
+.kr-theme-row { display:flex; align-items:center; gap:10px; }
+.kr-theme-row + .kr-theme-row { margin-top:0; }
+.kr-theme-sq { width:10px; height:10px; border-radius:3px; flex:none; }
+.kr-theme-name { font-size:var(--t-sm); font-weight:500; flex:1; }
+.kr-theme-count { font-size:var(--t-sm); font-weight:600; }
+
+.kr-heatmap { display:grid; grid-template-columns:76px repeat(7, 1fr); gap:4px; align-items:center; }
+.kr-heatmap .hd { font-size:var(--t-xs); color:var(--muted); text-align:center; font-weight:600; padding-bottom:4px; }
+.kr-heatmap .rl { font-size:var(--t-xs); color:var(--muted); }
+.kr-heat-cell { aspect-ratio:1; border-radius:5px; }
+.kr-heat-0 { background:var(--base); }
+.kr-heat-1 { background:var(--pill-rosa); }
+.kr-heat-2 { background:var(--coral); }
+.kr-heat-3 { background:var(--preto); }
+.kr-heat-legend { display:flex; align-items:center; gap:6px; margin-top:14px; font-size:var(--t-xs); color:var(--muted); }
+.kr-heat-legend .sw { width:12px; height:12px; border-radius:3px; }
+
+.kr-table-card { margin-bottom:0; }
+.kr-table-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+.kr-filters { display:flex; gap:8px; flex-wrap:wrap; }
+.kr-filter { font-family:inherit; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--muted); transition:all var(--dur-fast) var(--ease); }
+.kr-filter:hover { border-color:var(--coral-suave); }
+.kr-filter.active { background:var(--preto); color:#fff; border-color:var(--preto); }
+
+.kr-table-wrap { overflow-x:auto; }
+table.kr-table { width:100%; border-collapse:collapse; min-width:820px; }
+.kr-table th { text-align:left; font-size:var(--t-xs); font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:0 10px 10px; border-bottom:1px solid var(--border); white-space:nowrap; }
+.kr-table td { padding:13px 10px; border-bottom:1px solid var(--border); font-size:var(--t-sm); vertical-align:middle; }
+.kr-table tr:last-child td { border-bottom:none; }
+.kr-type { display:flex; align-items:center; gap:7px; color:var(--texto); white-space:nowrap; }
+.kr-type svg { color:var(--muted); flex:none; }
+.kr-subject b { display:block; font-weight:600; }
+.kr-subject span { display:block; font-size:var(--t-xs); color:var(--muted); margin-top:2px; }
+.kr-sev { display:flex; align-items:center; gap:7px; white-space:nowrap; }
+.kr-sev-dot { width:8px; height:8px; border-radius:50%; flex:none; }
+.kr-sev-severa { background:var(--vermelho); }
+.kr-sev-media { background:var(--pill-ambar); }
+.kr-sev-baixa { background:var(--verde); }
+.kr-btn.success { background:var(--verde); color:#fff; }
+.kr-btn.success:hover { filter:brightness(.95); }
+
+.kr-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-top:20px; font-size:var(--t-xs); color:var(--muted); }
+
+@media (max-width:900px) {
+  .kr-hero-top { grid-template-columns:1fr 1fr; }
+  .kr-count-card { grid-column:1 / -1; min-height:180px; }
+  .kr-row-3 { grid-template-columns:1fr; }
+}
+@media (max-width:640px) {
+  .kr-hero-top { grid-template-columns:1fr; }
+  .kr-count-card { grid-column:auto; }
+}
+</style>
+<link rel="stylesheet" href="assets/demo-guide.css">
+</head>
+<body>
+
+<div class="kr-shell">
+
+  <aside class="kr-side">
+    <div class="kr-brand"><img src="assets/kratos-logo.svg" alt="Kratos"></div>
+    <div class="kr-user">
+      <div class="kr-avatar">R</div>
+      <div style="flex:1;min-width:0;">
+        <div class="nm">Rodrigo Barão</div>
+        <div class="rl">admin</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <nav class="kr-nav">
+      <a href="home.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span>
+        <span>Dashboard</span>
+      </a>
+      <a href="home.html" class="active">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+        <span>Comando</span>
+      </a>
+      <a href="pendencia-detalhe.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2 3h6l2-3h4"/><path d="M5 12 3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2l-2 7"/><path d="M3 12v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6"/></svg></span>
+        <span>Pendências</span>
+        <span class="ct">7</span>
+      </a>
+      <a href="war-room-crise.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14 6 10z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></span>
+        <span>Alertas</span>
+        <span class="ct">2</span>
+      </a>
+      <a href="financeiro.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><rect x="14.5" y="12.5" width="4.5" height="3" rx="1"/></svg></span>
+        <span>Financeiro</span>
+      </a>
+      <a href="juridico.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M4 7 2 12a2.6 2.6 0 0 0 5 0L5 7z"/><path d="M20 7l-2 5a2.6 2.6 0 0 0 5 0l-2-5z"/><path d="M8 21h8"/></svg></span>
+        <span>Jurídico</span>
+      </a>
+      <a href="territorio.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg></span>
+        <span>Território</span>
+      </a>
+      <a href="conteudo.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17l5-5 3 3 4-5 4 5"/></svg></span>
+        <span>Conteúdo</span>
+        <span class="ct">3</span>
+      </a>
+      <a href="agenda.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+        <span>Agenda</span>
+      </a>
+      <a href="pesquisa.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="20" y1="20" x2="15.5" y2="15.5"/></svg></span>
+        <span>Pesquisa</span>
+      </a>
+      <a href="monitoramento.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 13 7 13 9 7 13 19 16 13 22 13"/></svg></span>
+        <span>Monitoramento</span>
+      </a>
+      <a href="configuracao.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></span>
+        <span>Configuração</span>
+      </a>
+      <a href="auditoria.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <span>Auditoria</span>
+      </a>
+    </nav>
+
+    <div class="kr-promo">
+      <p>Ative módulos premium</p>
+      <button type="button">Ver módulos</button>
+    </div>
+  </aside>
+
+  <div class="kr-main">
+    <header class="kr-topbar">
+      <span class="kr-crumb">Comando</span>
+      <div class="kr-status">
+        <span class="kr-dot"></span>
+        <span>Hermes on-line</span>
+        <span>·</span>
+        <span class="tabular">24 jul 2026 · 14:23</span>
+        <span>·</span>
+        <span>v0.3.1</span>
+      </div>
+    </header>
+
+    <main class="kr-content">
+
+      <div class="kr-screen-head">
+        <div>
+          <h1 class="kr-h1">Mariana Costa</h1>
+          <p class="kr-sub">Deputada Federal · Santa Catarina · PILOTO</p>
+        </div>
+      </div>
+
+      <!-- hero: contagem + métricas -->
+      <section class="kr-hero-top">
+        <div class="kr-card-dark kr-count-card">
+          <div class="kr-count-deco a"></div>
+          <div class="kr-count-deco b"></div>
+          <div class="kr-count-deco c"></div>
+          <p class="kr-count-label">Dias até 4 out 2026 · 1º turno</p>
+          <div class="kr-count-num tabular">72</div>
+          <p class="kr-count-foot kr-trend-up">+8,7% engajamento</p>
+        </div>
+
+        <div class="kr-card kr-metric-card">
+          <div>
+            <p class="kr-metric-label">Teto TSE</p>
+            <p class="kr-metric-value tabular">33,9%</p>
+          </div>
+          <div>
+            <div class="kr-progress"><div class="kr-progress-fill" style="width:33.9%"></div></div>
+            <p class="kr-metric-sub tabular">R$ 847k / 2,5M</p>
+          </div>
+          <p class="kr-trend-up">+5,1% sem</p>
+        </div>
+
+        <div class="kr-card kr-metric-card">
+          <div>
+            <p class="kr-metric-label">Pendências</p>
+            <p class="kr-metric-value tabular">7</p>
+          </div>
+          <p class="kr-metric-sub">3 conteúdo · 2 despesa · 2 jurídico</p>
+          <p class="kr-trend-down">2 &gt; 24h</p>
+        </div>
+
+        <div class="kr-card kr-metric-card">
+          <div>
+            <p class="kr-metric-label">Alertas</p>
+            <p class="kr-metric-value tabular">2</p>
+          </div>
+          <p class="kr-metric-sub">1 severo · 1 médio</p>
+          <p class="kr-trend-down">↑ 1 hoje</p>
+        </div>
+
+        <div class="kr-card kr-metric-card">
+          <div>
+            <p class="kr-metric-label">Demandas 7d</p>
+            <p class="kr-metric-value tabular">43</p>
+          </div>
+          <p class="kr-metric-sub">32 mapeadas · 11 sem resposta</p>
+          <p class="kr-trend-up">+11%</p>
+        </div>
+      </section>
+
+      <!-- gráfico de menções -->
+      <section class="kr-card kr-chart-card">
+        <div class="kr-chart-head">
+          <p class="kr-card-title" style="margin-bottom:0;">Menções nas redes</p>
+          <button type="button" class="kr-pill outline">
+            Últimos 30 dias
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+        <div class="kr-chart-num">
+          <span class="kr-metric-value tabular">2.147 hoje</span>
+          <span class="kr-trend-up">+18% vs ontem</span>
+        </div>
+
+        <svg class="kr-chart-svg" viewBox="0 0 760 150" preserveAspectRatio="none">
+          <rect x="3.0" y="109" width="19.3" height="39" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="28.3" y="112" width="19.3" height="36" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="53.7" y="107" width="19.3" height="41" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="79.0" y="112" width="19.3" height="36" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="104.3" y="109" width="19.3" height="39" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="129.7" y="109" width="19.3" height="39" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="155.0" y="114" width="19.3" height="34" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="180.3" y="111" width="19.3" height="37" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="205.7" y="116" width="19.3" height="32" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="231.0" y="115" width="19.3" height="33" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="256.3" y="120" width="19.3" height="28" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="281.7" y="124" width="19.3" height="24" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="307.0" y="123" width="19.3" height="25" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="332.3" y="115" width="19.3" height="33" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="357.7" y="119" width="19.3" height="29" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="383.0" y="121" width="19.3" height="27" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="408.3" y="117" width="19.3" height="31" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="433.7" y="107" width="19.3" height="41" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="459.0" y="104" width="19.3" height="44" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="484.3" y="103" width="19.3" height="45" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="509.7" y="93" width="19.3" height="55" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="535.0" y="98" width="19.3" height="50" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="560.3" y="90" width="19.3" height="58" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="585.7" y="91" width="19.3" height="57" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="611.0" y="95" width="19.3" height="53" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="636.3" y="99" width="19.3" height="49" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="661.7" y="99" width="19.3" height="49" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="687.0" y="92" width="19.3" height="56" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="712.3" y="57" width="19.3" height="91" rx="3" fill="var(--pill-rosa)"/>
+          <rect x="737.7" y="37" width="19.3" height="111" rx="3" fill="var(--pill-rosa)"/>
+          <polyline points="12.7,103 38.0,106 63.4,101 88.7,106 114.0,103 139.4,103 164.7,108 190.0,105 215.4,110 240.7,109 266.0,114 291.4,118 316.7,117 342.0,109 367.4,113 392.7,115 418.0,111 443.4,101 468.7,98 494.0,97 519.4,87 544.7,92 570.0,84 595.4,85 620.7,89 646.0,93 671.4,93 696.7,86 722.0,51 747.4,31" fill="none" stroke="var(--coral)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="12.7" cy="103" r="2.6" fill="var(--coral)"/>
+          <circle cx="114.0" cy="103" r="2.6" fill="var(--coral)"/>
+          <circle cx="215.4" cy="110" r="2.6" fill="var(--coral)"/>
+          <circle cx="316.7" cy="117" r="2.6" fill="var(--coral)"/>
+          <circle cx="418.0" cy="111" r="2.6" fill="var(--coral)"/>
+          <circle cx="519.4" cy="87" r="2.6" fill="var(--coral)"/>
+          <circle cx="620.7" cy="89" r="2.6" fill="var(--coral)"/>
+          <circle cx="747.4" cy="31" r="3" fill="var(--coral)"/>
+        </svg>
+        <div class="kr-chart-axis tabular">
+          <span>26 jun</span>
+          <span>1 jul</span>
+          <span>6 jul</span>
+          <span>11 jul</span>
+          <span>16 jul</span>
+          <span>21 jul</span>
+          <span>24 jul</span>
+        </div>
+      </section>
+
+      <!-- linha do meio: bairros, temas, cobertura -->
+      <section class="kr-grid kr-row-3">
+        <div class="kr-card">
+          <p class="kr-card-title">Top bairros</p>
+          <div class="kr-list">
+            <div class="kr-list-row">
+              <span class="kr-list-name">Trindade</span>
+              <span class="kr-list-track"><span class="kr-list-fill" style="width:100%"></span></span>
+              <span class="kr-list-count tabular">12</span>
+            </div>
+            <div class="kr-list-row">
+              <span class="kr-list-name">Centro</span>
+              <span class="kr-list-track"><span class="kr-list-fill" style="width:75%"></span></span>
+              <span class="kr-list-count tabular">9</span>
+            </div>
+            <div class="kr-list-row">
+              <span class="kr-list-name">Estreito</span>
+              <span class="kr-list-track"><span class="kr-list-fill" style="width:58%"></span></span>
+              <span class="kr-list-count tabular">7</span>
+            </div>
+            <div class="kr-list-row">
+              <span class="kr-list-name">Ingleses</span>
+              <span class="kr-list-track"><span class="kr-list-fill" style="width:50%"></span></span>
+              <span class="kr-list-count tabular">6</span>
+            </div>
+            <div class="kr-list-row">
+              <span class="kr-list-name">Capoeiras</span>
+              <span class="kr-list-track"><span class="kr-list-fill" style="width:42%"></span></span>
+              <span class="kr-list-count tabular">5</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card">
+          <p class="kr-card-title">Top temas</p>
+          <div class="kr-list">
+            <div class="kr-theme-row">
+              <span class="kr-theme-sq" style="background:var(--coral);"></span>
+              <span class="kr-theme-name">Saúde</span>
+              <span class="kr-theme-count tabular">620</span>
+            </div>
+            <div class="kr-theme-row">
+              <span class="kr-theme-sq" style="background:var(--pill-rosa);"></span>
+              <span class="kr-theme-name">Segurança</span>
+              <span class="kr-theme-count tabular">480</span>
+            </div>
+            <div class="kr-theme-row">
+              <span class="kr-theme-sq" style="background:var(--pill-azul);"></span>
+              <span class="kr-theme-name">Mobilidade</span>
+              <span class="kr-theme-count tabular">430</span>
+            </div>
+            <div class="kr-theme-row">
+              <span class="kr-theme-sq" style="background:var(--pill-ambar);"></span>
+              <span class="kr-theme-name">Educação</span>
+              <span class="kr-theme-count tabular">390</span>
+            </div>
+            <div class="kr-theme-row">
+              <span class="kr-theme-sq" style="background:var(--pill-verde);"></span>
+              <span class="kr-theme-name">Habitação</span>
+              <span class="kr-theme-count tabular">350</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card">
+          <p class="kr-card-title">Cobertura territorial</p>
+          <div class="kr-heatmap">
+            <span class="rl"></span>
+            <span class="hd">Seg</span><span class="hd">Ter</span><span class="hd">Qua</span><span class="hd">Qui</span><span class="hd">Sex</span><span class="hd">Sáb</span><span class="hd">Dom</span>
+
+            <span class="rl">Trindade</span>
+            <span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-3"></span><span class="kr-heat-cell kr-heat-3"></span><span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-3"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-1"></span>
+
+            <span class="rl">Centro</span>
+            <span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-3"></span><span class="kr-heat-cell kr-heat-3"></span><span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-1"></span>
+
+            <span class="rl">Estreito</span>
+            <span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-0"></span>
+
+            <span class="rl">Ingleses</span>
+            <span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-1"></span>
+
+            <span class="rl">Capoeiras</span>
+            <span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-0"></span>
+
+            <span class="rl">Rio Vermelho</span>
+            <span class="kr-heat-cell kr-heat-0"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-2"></span><span class="kr-heat-cell kr-heat-1"></span>
+
+            <span class="rl">Coqueiros</span>
+            <span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-0"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-1"></span><span class="kr-heat-cell kr-heat-0"></span>
+          </div>
+          <div class="kr-heat-legend">
+            <span>Menos</span>
+            <span class="sw" style="background:var(--base);border:1px solid var(--border);"></span>
+            <span class="sw" style="background:var(--pill-rosa);"></span>
+            <span class="sw" style="background:var(--coral);"></span>
+            <span class="sw" style="background:var(--preto);"></span>
+            <span>Mais</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- tabela de pendências -->
+      <section class="kr-card kr-table-card">
+        <div class="kr-table-head">
+          <p class="kr-card-title" style="margin-bottom:0;">Pendências de aprovação</p>
+          <div class="kr-filters">
+            <button type="button" class="kr-pill kr-filter active">Todas</button>
+            <button type="button" class="kr-pill kr-filter">Conteúdo</button>
+            <button type="button" class="kr-pill kr-filter">Despesa</button>
+            <button type="button" class="kr-pill kr-filter">Jurídico</button>
+            <button type="button" class="kr-pill kr-filter">Alerta</button>
+          </div>
+          <button type="button" class="kr-pill outline">
+            Este mês
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+
+        <div class="kr-table-wrap">
+        <table class="kr-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tipo</th>
+              <th>Agente</th>
+              <th>Assunto</th>
+              <th>Severidade</th>
+              <th>Aberta há</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="kr-pill mono">PND-241</span></td>
+              <td>
+                <span class="kr-type">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14 6 10z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+                  Alerta
+                </span>
+              </td>
+              <td>Argos</td>
+              <td class="kr-subject"><b>Menções +340% tema fiscal</b><span>Pico nas últimas 2h</span></td>
+              <td><span class="kr-sev"><span class="kr-sev-dot kr-sev-severa"></span>Severa</span></td>
+              <td class="tabular">22min</td>
+              <td><a href="war-room-crise.html" class="kr-btn outline sm">Abrir</a></td>
+            </tr>
+            <tr>
+              <td><span class="kr-pill mono">PND-238</span></td>
+              <td>
+                <span class="kr-type">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><rect x="14.5" y="12.5" width="4.5" height="3" rx="1"/></svg>
+                  Despesa
+                </span>
+              </td>
+              <td>Drachma</td>
+              <td class="kr-subject"><b>Nota Gráfica Boa Estampa</b><span class="tabular">R$ 4.820 · falta comprovante</span></td>
+              <td><span class="kr-sev"><span class="kr-sev-dot kr-sev-media"></span>Média</span></td>
+              <td class="tabular">1d 4h</td>
+              <td><a href="#" class="kr-btn outline sm">Ver ficha</a></td>
+            </tr>
+            <tr>
+              <td><span class="kr-pill mono">PND-236</span></td>
+              <td>
+                <span class="kr-type">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17l5-5 3 3 4-5 4 5"/></svg>
+                  Conteúdo
+                </span>
+              </td>
+              <td>Hermes</td>
+              <td class="kr-subject"><b>Carrossel Instagram</b><span>Tema: saúde</span></td>
+              <td><span class="kr-sev"><span class="kr-sev-dot kr-sev-baixa"></span>Baixa</span></td>
+              <td class="tabular">3h40</td>
+              <td><a href="#" class="kr-btn outline sm">Ver ficha</a></td>
+            </tr>
+            <tr>
+              <td><span class="kr-pill mono">PND-235</span></td>
+              <td>
+                <span class="kr-type">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17l5-5 3 3 4-5 4 5"/></svg>
+                  Conteúdo
+                </span>
+              </td>
+              <td>Hermes</td>
+              <td class="kr-subject"><b>Roteiro reels</b><span>Agenda · 45s</span></td>
+              <td><span class="kr-sev"><span class="kr-sev-dot kr-sev-baixa"></span>Baixa</span></td>
+              <td class="tabular">5h12</td>
+              <td><a href="#" class="kr-btn outline sm">Ver ficha</a></td>
+            </tr>
+            <tr>
+              <td><span class="kr-pill mono">PND-233</span></td>
+              <td>
+                <span class="kr-type">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M4 7 2 12a2.6 2.6 0 0 0 5 0L5 7z"/><path d="M20 7l-2 5a2.6 2.6 0 0 0 5 0l-2-5z"/><path d="M8 21h8"/></svg>
+                  Jurídico
+                </span>
+              </td>
+              <td>Nomos</td>
+              <td class="kr-subject"><b>Contratação agência de tráfego</b><span>Conduta pré-campanha</span></td>
+              <td><span class="kr-sev"><span class="kr-sev-dot kr-sev-media"></span>Média</span></td>
+              <td class="tabular">1d8h</td>
+              <td><a href="#" class="kr-btn outline sm">Ver ficha</a></td>
+            </tr>
+            <tr>
+              <td><span class="kr-pill mono">PND-232</span></td>
+              <td>
+                <span class="kr-type">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 12l3 3 5-6"/></svg>
+                  Decisão
+                </span>
+              </td>
+              <td>Strategos</td>
+              <td class="kr-subject"><b>Reforço territorial</b><span>Capoeiras + Rio Vermelho</span></td>
+              <td><span class="kr-sev"><span class="kr-sev-dot kr-sev-baixa"></span>Baixa</span></td>
+              <td class="tabular">18h</td>
+              <td><a href="#" class="kr-btn outline sm">Ver ficha</a></td>
+            </tr>
+            <tr>
+              <td><span class="kr-pill mono">PND-231</span></td>
+              <td>
+                <span class="kr-type">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><rect x="14.5" y="12.5" width="4.5" height="3" rx="1"/></svg>
+                  Despesa
+                </span>
+              </td>
+              <td>Drachma</td>
+              <td class="kr-subject"><b>Assessoria de imprensa</b><span class="tabular">R$ 12k/mês · documentação completa</span></td>
+              <td><span class="kr-sev"><span class="kr-sev-dot kr-sev-media"></span>Média</span></td>
+              <td class="tabular">20h</td>
+              <td><a href="#" class="kr-btn success sm">Aprovar</a></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <div class="kr-footer">
+        <span>Cérebro: kratos-cerebro-piloto-2026 · commit 9a3f2e</span>
+        <span>Kratos v0.3.1 · Hermes v2026.7.7</span>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/demo-guide.js" defer></script>
+</body>
+</html>

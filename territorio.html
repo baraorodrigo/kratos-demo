@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lideranças SC · Kratos</title>
+<link rel="stylesheet" href="assets/kratos-ui.css">
+<style>
+.kr-lid-grid { grid-template-columns:1.5fr 1fr; align-items:start; }
+.kr-map-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+.kr-filters { display:flex; gap:8px; flex-wrap:wrap; }
+.kr-filter { font-family:inherit; font-size:12px; font-weight:600; padding:6px 13px; border-radius:var(--r-full); cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--muted); transition:all var(--dur-fast) var(--ease); }
+.kr-filter:hover { border-color:var(--coral-suave); color:var(--coral); }
+.kr-filter.active { background:var(--preto); color:#fff; border-color:var(--preto); }
+
+.kr-mapwrap { position:relative; }
+.kr-map-svg { display:block; width:100%; height:auto; border-radius:var(--r-md); }
+.kr-map-svg .regiao { stroke:var(--white); stroke-width:1.6; stroke-linejoin:round; cursor:pointer; transition:opacity .18s,filter .18s; }
+.kr-map-svg .regiao:hover { filter:brightness(.94); }
+.kr-map-svg .regiao.dim { opacity:.32; }
+.kr-map-lbl { font-family:var(--font); font-size:21px; font-weight:700; pointer-events:none; }
+.kr-map-lbl.dim { opacity:.3; }
+.kr-pin { cursor:pointer; transition:opacity .16s; }
+.kr-pin.dim { opacity:.2; }
+.kr-pin .halo { fill:#fff; }
+.kr-pin .core { fill:var(--coral); transition:r .12s; }
+.kr-pin:hover .core { r:6; }
+.kr-pin.sel .core { fill:var(--preto); }
+#kr-tip { position:absolute; pointer-events:none; opacity:0; transform:translate(-50%,-118%); background:var(--preto); color:#fff; padding:7px 11px; border-radius:9px; font-size:12px; white-space:nowrap; box-shadow:0 6px 20px rgba(0,0,0,.25); transition:opacity .1s; z-index:6; }
+#kr-tip b { color:var(--coral-suave); }
+
+.kr-map-legend { display:flex; align-items:center; gap:10px; margin-top:16px; font-size:var(--t-xs); color:var(--muted); }
+.kr-map-legend .bar { flex:1; max-width:220px; height:8px; border-radius:var(--r-full); background:linear-gradient(90deg, var(--base), var(--pill-rosa), var(--coral), var(--preto)); border:1px solid var(--border); }
+.kr-map-legend .sw { display:inline-flex; align-items:center; gap:6px; margin-left:auto; }
+.kr-map-legend .sw .d { width:9px; height:9px; border-radius:50%; background:var(--coral); }
+
+.kr-lid-card { max-height:700px; overflow-y:auto; }
+.kr-search { margin-bottom:14px; }
+.kr-search input { width:100%; font-family:inherit; font-size:13.5px; background:var(--base); border:1px solid var(--border); border-radius:var(--r-md); padding:9px 13px; color:var(--texto); }
+.kr-search input::placeholder { color:var(--muted); }
+.kr-lid-list { display:flex; flex-direction:column; gap:20px; }
+.kr-lid-region-head { display:flex; align-items:baseline; justify-content:space-between; padding-bottom:8px; margin-bottom:10px; border-bottom:1px solid var(--border); }
+.kr-lid-region-name { font-size:var(--t-sm); font-weight:700; text-transform:uppercase; letter-spacing:0.04em; }
+.kr-lid-region-count { font-size:var(--t-xs); color:var(--muted); flex:none; }
+.kr-lid-rows { display:flex; flex-direction:column; gap:4px; }
+.kr-lid-row { display:flex; align-items:center; gap:10px; padding:7px 8px; border-radius:var(--r-md); cursor:pointer; transition:background .12s; }
+.kr-lid-row:hover { background:var(--base); }
+.kr-lid-row.sel { background:var(--pill-rosa); }
+.kr-lid-body { flex:1; min-width:0; }
+.kr-lid-name { font-size:var(--t-sm); font-weight:600; }
+.kr-lid-meta { font-size:var(--t-xs); color:var(--muted); margin-top:1px; }
+.kr-lid-right { display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex:none; }
+.kr-lid-votes-val { font-size:var(--t-sm); font-weight:700; }
+
+.kr-metrics-row { display:flex; align-items:center; gap:20px; flex-wrap:wrap; margin-top:16px; font-size:var(--t-sm); color:var(--muted); }
+.kr-metrics-row b { color:var(--texto); font-weight:700; }
+
+/* drawer detalhe */
+.kr-drawer-bg { position:fixed; inset:0; background:rgba(16,16,16,.4); opacity:0; visibility:hidden; transition:opacity .2s; z-index:1000; }
+.kr-drawer-bg.open { opacity:1; visibility:visible; }
+.kr-drawer { position:fixed; top:0; right:0; height:100vh; width:400px; max-width:92vw; background:var(--white); border-left:1px solid var(--border); box-shadow:-20px 0 60px rgba(0,0,0,.18); transform:translateX(100%); transition:transform .28s var(--ease); z-index:1001; overflow-y:auto; padding:26px 26px 30px; }
+.kr-drawer.open { transform:none; }
+.kr-drawer .dclose { float:right; background:none; border:none; cursor:pointer; color:var(--muted); font-size:20px; line-height:1; }
+.kr-dhead { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+.kr-dhead .av { width:52px; height:52px; border-radius:50%; background:var(--coral); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px; flex:none; }
+.kr-dhead .nm { font-size:18px; font-weight:700; }
+.kr-dhead .mt { font-size:12.5px; color:var(--muted); margin-top:2px; }
+.kr-dstats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px; }
+.kr-dstat { background:var(--base); border-radius:var(--r-md); padding:12px 14px; }
+.kr-dstat .k { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
+.kr-dstat .v { font-size:18px; font-weight:700; margin-top:3px; }
+.kr-dwhats { display:flex; align-items:center; gap:12px; background:#e7f7ec; border:1px solid #bfe6cb; border-radius:var(--r-md); padding:12px 14px; margin-bottom:18px; }
+.kr-dwhats .wi { width:38px; height:38px; border-radius:10px; background:#25d366; flex:none; display:flex; align-items:center; justify-content:center; }
+.kr-dwhats .wi svg { width:20px; height:20px; fill:#fff; }
+.kr-dwhats .wn { flex:1; min-width:0; }
+.kr-dwhats .wn .lbl { font-size:10.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#1a7a3c; }
+.kr-dwhats .wn .num { font-size:14px; font-weight:700; color:var(--texto); }
+.kr-dwhats a { font-family:inherit; font-size:12px; font-weight:700; background:#25d366; color:#fff; border-radius:var(--r-full); padding:8px 14px; text-decoration:none; white-space:nowrap; }
+.kr-dsec-t { font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin:18px 0 12px; }
+.kr-crm-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px; }
+.kr-crm-actions button { font-family:inherit; font-size:12.5px; font-weight:700; padding:11px; border-radius:var(--r-md); cursor:pointer; border:1px solid var(--border); background:var(--base); color:var(--texto); display:flex; align-items:center; justify-content:center; gap:7px; transition:all .14s var(--ease); }
+.kr-crm-actions button:hover { border-color:var(--coral); color:var(--coral); }
+.kr-crm-actions button svg { width:16px; height:16px; }
+.kr-sent { display:flex; flex-direction:column; gap:9px; }
+.kr-sent-i { display:flex; align-items:center; gap:10px; font-size:12.5px; }
+.kr-sent-i .ic { width:30px; height:30px; border-radius:8px; background:var(--pill-rosa); color:var(--coral-deep); flex:none; display:flex; align-items:center; justify-content:center; }
+.kr-sent-i .ic svg { width:15px; height:15px; }
+.kr-sent-i .tx { flex:1; min-width:0; } .kr-sent-i .tx .w { display:block; font-size:10.5px; color:var(--muted); font-family:var(--font-mono); margin-top:1px; }
+.kr-sent-i .st { font-size:10.5px; font-weight:700; color:var(--verde); flex:none; }
+.kr-ativ { display:flex; flex-direction:column; gap:14px; }
+.kr-ativ-i { display:flex; gap:11px; }
+.kr-ativ-i .dt { width:8px; height:8px; border-radius:50%; background:var(--coral); flex:none; margin-top:5px; }
+.kr-ativ-i .tx { font-size:13px; line-height:1.4; }
+.kr-ativ-i .tx .w { display:block; font-size:11px; color:var(--muted); margin-top:1px; font-family:var(--font-mono); }
+
+/* modal cadastrar */
+.kr-modal-bg { position:fixed; inset:0; background:rgba(16,16,16,.42); opacity:0; visibility:hidden; transition:opacity .2s; z-index:1002; display:flex; align-items:center; justify-content:center; padding:20px; }
+.kr-modal-bg.open { opacity:1; visibility:visible; }
+.kr-modal { background:var(--white); border-radius:var(--r-lg); border:1px solid var(--border); width:440px; max-width:100%; padding:26px; box-shadow:0 30px 70px rgba(0,0,0,.3); transform:translateY(10px); transition:transform .22s var(--ease); }
+.kr-modal-bg.open .kr-modal { transform:none; }
+.kr-modal h3 { font-size:18px; font-weight:700; margin-bottom:4px; }
+.kr-modal p.sub { font-size:12.5px; color:var(--muted); margin-bottom:18px; }
+.kr-field { margin-bottom:13px; }
+.kr-field label { display:block; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
+.kr-field input, .kr-field select { width:100%; font-family:inherit; font-size:13.5px; background:var(--base); border:1px solid var(--border); border-radius:var(--r-md); padding:9px 12px; color:var(--texto); }
+.kr-field.row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.kr-modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; }
+
+/* toast */
+.kr-toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--preto); color:#fff; font-size:13.5px; font-weight:600; padding:12px 20px; border-radius:var(--r-full); box-shadow:0 12px 30px rgba(0,0,0,.28); opacity:0; visibility:hidden; transition:all .25s var(--ease); z-index:1100; display:flex; align-items:center; gap:9px; }
+.kr-toast.show { opacity:1; visibility:visible; transform:translateX(-50%) translateY(0); }
+.kr-toast .ck { color:var(--verde); font-weight:800; }
+
+@media (max-width:900px) {
+  .kr-lid-grid { grid-template-columns:1fr; }
+  .kr-lid-card { max-height:none; }
+}
+</style>
+<link rel="stylesheet" href="assets/demo-guide.css">
+<script src="assets/sc-data.js"></script>
+</head>
+<body>
+
+<div class="kr-shell">
+
+  <aside class="kr-side">
+    <div class="kr-brand"><img src="assets/kratos-logo.svg" alt="Kratos"></div>
+    <div class="kr-user">
+      <div class="kr-avatar">R</div>
+      <div style="flex:1;min-width:0;">
+        <div class="nm">Rodrigo Barão</div>
+        <div class="rl">admin</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <nav class="kr-nav">
+      <a href="home.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span><span>Dashboard</span></a>
+      <a href="home.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span><span>Comando</span></a>
+      <a href="pendencia-detalhe.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2 3h6l2-3h4"/><path d="M5 12 3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2l-2 7"/><path d="M3 12v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6"/></svg></span><span>Pendências</span><span class="ct">7</span></a>
+      <a href="war-room-crise.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14 6 10z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></span><span>Alertas</span><span class="ct">2</span></a>
+      <a href="financeiro.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><rect x="14.5" y="12.5" width="4.5" height="3" rx="1"/></svg></span><span>Financeiro</span></a>
+      <a href="juridico.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M4 7 2 12a2.6 2.6 0 0 0 5 0L5 7z"/><path d="M20 7l-2 5a2.6 2.6 0 0 0 5 0l-2-5z"/><path d="M8 21h8"/></svg></span><span>Jurídico</span></a>
+      <a href="territorio.html" class="active"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg></span><span>Território</span></a>
+      <a href="conteudo.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17l5-5 3 3 4-5 4 5"/></svg></span><span>Conteúdo</span><span class="ct">3</span></a>
+      <a href="agenda.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span>Agenda</span></a>
+      <a href="pesquisa.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="20" y1="20" x2="15.5" y2="15.5"/></svg></span><span>Pesquisa</span></a>
+      <a href="monitoramento.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 13 7 13 9 7 13 19 16 13 22 13"/></svg></span><span>Monitoramento</span></a>
+      <a href="configuracao.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></span><span>Configuração</span></a>
+      <a href="auditoria.html"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><span>Auditoria</span></a>
+    </nav>
+    <div class="kr-promo"><p>Ative módulos premium</p><button type="button">Ver módulos</button></div>
+  </aside>
+
+  <div class="kr-main">
+    <header class="kr-topbar">
+      <span class="kr-crumb">Território · Santa Catarina</span>
+      <div class="kr-status"><span class="kr-dot"></span><span>Hermes on-line</span><span>·</span><span class="tabular">24 jul 2026 · 14:23</span><span>·</span><span>v0.3.1</span></div>
+    </header>
+
+    <main class="kr-content">
+      <div class="kr-screen-head">
+        <div>
+          <h1 class="kr-h1">Lideranças · Santa Catarina</h1>
+          <p class="kr-sub" id="kr-sub">Polis · carregando…</p>
+        </div>
+        <button type="button" class="kr-btn primary" id="kr-cadastrar">Cadastrar liderança</button>
+      </div>
+
+      <section class="kr-grid kr-lid-grid">
+        <div class="kr-card">
+          <div class="kr-map-head">
+            <p class="kr-card-title" style="margin-bottom:0;">Mapa de lideranças</p>
+            <div class="kr-filters" id="kr-filters"></div>
+          </div>
+          <div class="kr-mapwrap">
+            <svg class="kr-map-svg" id="kr-map" xmlns="http://www.w3.org/2000/svg"></svg>
+            <div id="kr-tip"></div>
+          </div>
+          <div class="kr-map-legend">
+            <span>Base fraca</span>
+            <span class="bar"></span>
+            <span>Base forte</span>
+            <span class="sw"><span class="d"></span> cidade com liderança · clique para ver</span>
+          </div>
+        </div>
+
+        <div class="kr-card kr-lid-card">
+          <div class="kr-search"><input type="text" id="kr-search" placeholder="Buscar liderança ou cidade…"></div>
+          <div class="kr-lid-list" id="kr-list"></div>
+        </div>
+      </section>
+
+      <div class="kr-metrics-row" id="kr-metrics"></div>
+    </main>
+  </div>
+</div>
+
+<!-- drawer detalhe -->
+<div class="kr-drawer-bg" id="kr-drawer-bg"></div>
+<aside class="kr-drawer" id="kr-drawer" aria-label="Detalhe da liderança"></aside>
+
+<!-- modal cadastrar -->
+<div class="kr-modal-bg" id="kr-modal-bg">
+  <div class="kr-modal" role="dialog" aria-modal="true">
+    <h3>Cadastrar liderança</h3>
+    <p class="sub">Aparece no mapa e na lista na hora.</p>
+    <div class="kr-field"><label>Nome</label><input id="f-nome" type="text" placeholder="Ex: João da Silva"></div>
+    <div class="kr-field row2">
+      <div><label>Cidade</label><input id="f-cidade" type="text" placeholder="Ex: Criciúma"></div>
+      <div><label>Região</label><select id="f-regiao"></select></div>
+    </div>
+    <div class="kr-field row2">
+      <div><label>Cargo / base</label><input id="f-cargo" type="text" placeholder="Ex: vereador"></div>
+      <div><label>Votos estimados</label><input id="f-votos" type="number" placeholder="Ex: 5000"></div>
+    </div>
+    <div class="kr-field"><label>WhatsApp</label><input id="f-whats" type="text" placeholder="Ex: 48 99999-8888"></div>
+    <div class="kr-modal-actions">
+      <button type="button" class="kr-btn outline" id="f-cancel">Cancelar</button>
+      <button type="button" class="kr-btn primary" id="f-save">Cadastrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="kr-toast" id="kr-toast"></div>
+
+<script>
+(function(){
+  var SVGNS="http://www.w3.org/2000/svg";
+  var norm=function(s){return (s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();};
+  var fmt=function(n){return (n||0).toLocaleString("pt-BR");};
+
+  var LIDERES=[
+    {nome:"Marta Espíndola",cidade:"Florianópolis",meso:"Grande Florianópolis",lon:-48.548,lat:-27.596,cargo:"vereadora",votos:12400,base:"forte",whats:"48 99120-4455",ativ:[["há 2h","Confirmou presença no comício de sábado, Centro"],["ontem","Trouxe 3 demandas do bairro Trindade"],["há 4 dias","Reuniu 40 pessoas em roda de conversa"]]},
+    {nome:"Jair Fontes",cidade:"São José",meso:"Grande Florianópolis",lon:-48.638,lat:-27.577,cargo:"liderança comunitária",votos:6800,base:"media",whats:"48 99870-1122",ativ:[["há 5h","Distribuiu material na feira de Kobrasol"],["há 2 dias","Pediu apoio pra reforma do posto"]]},
+    {nome:"Cléia Amorim",cidade:"Palhoça",meso:"Grande Florianópolis",lon:-48.667,lat:-27.645,cargo:"presidente de associação",votos:4200,base:"nova",whats:"48 99333-7788",ativ:[["há 1 dia","Primeiro contato — topou ser liderança de bairro"]]},
+    {nome:"Rudi Hoffmann",cidade:"Blumenau",meso:"Vale do Itajaí",lon:-49.066,lat:-26.919,cargo:"ex-vereador",votos:18900,base:"forte",whats:"47 99101-2020",ativ:[["há 3h","Agendou carreata no Garcia pra domingo"],["ontem","Fechou apoio de 2 associações de moradores"]]},
+    {nome:"Silmara Bianchi",cidade:"Itajaí",meso:"Vale do Itajaí",lon:-48.662,lat:-26.908,cargo:"sindicato portuário",votos:9100,base:"media",whats:"47 99555-3040",ativ:[["há 6h","Mobilizou pauta dos portuários"]]},
+    {nome:"Paulo Deschamps",cidade:"Balneário Camboriú",meso:"Vale do Itajaí",lon:-48.630,lat:-26.992,cargo:"empresário",votos:7500,base:"media",whats:"47 99777-6060",ativ:[["há 2 dias","Ofereceu espaço pra evento de campanha"]]},
+    {nome:"Décio Nabeshima",cidade:"Joinville",meso:"Norte Catarinense",lon:-48.846,lat:-26.304,cargo:"liderança industrial",votos:15300,base:"forte",whats:"47 99202-9090",ativ:[["há 1h","Confirmou presença de 3 lideranças da zona industrial"],["ontem","Repassou 5 demandas de mobilidade"]]},
+    {nome:"Ivete Kuhnen",cidade:"Jaraguá do Sul",meso:"Norte Catarinense",lon:-49.067,lat:-26.486,cargo:"educadora",votos:5600,base:"media",whats:"47 99404-1515",ativ:[["há 3 dias","Organizou roda com professores"]]},
+    {nome:"Nelson Baldissera",cidade:"Chapecó",meso:"Oeste Catarinense",lon:-52.618,lat:-27.096,cargo:"cooperativa agrícola",votos:11200,base:"forte",whats:"49 99303-8080",ativ:[["há 4h","Levou pauta do agro pra reunião"],["ontem","Confirmou apoio da cooperativa"]]},
+    {nome:"Terezinha Foppa",cidade:"Concórdia",meso:"Oeste Catarinense",lon:-52.028,lat:-27.234,cargo:"liderança rural",votos:4900,base:"nova",whats:"49 99606-2323",ativ:[["há 2 dias","Primeiro contato — quer levar a campanha ao interior"]]},
+    {nome:"Volnei Córdova",cidade:"Lages",meso:"Serrana",lon:-50.326,lat:-27.816,cargo:"pecuarista",votos:6100,base:"media",whats:"49 99808-4141",ativ:[["há 5h","Articulou apoio no meio rural da serra"]]},
+    {nome:"Gelson Búrigo",cidade:"Criciúma",meso:"Sul Catarinense",lon:-49.370,lat:-28.677,cargo:"mineração/sindicato",votos:13700,base:"forte",whats:"48 99707-5252",ativ:[["há 2h","Reuniu sindicato dos mineiros"],["ontem","Confirmou carro de som pro fim de semana"]]},
+    {nome:"Ana Búrigo",cidade:"Tubarão",meso:"Sul Catarinense",lon:-48.999,lat:-28.467,cargo:"saúde",votos:5300,base:"nova",whats:"48 99909-6363",ativ:[["há 1 dia","Topou coordenar a pauta de saúde no sul"]]}
+  ];
+
+  var BASE_COR={forte:["#a7d5a7","#2c6e2c"],media:["#f5d59c","#7a5a10"],nova:["#a5c8e5","#274a63"]};
+  var BASE_LBL={forte:"Forte",media:"Média",nova:"Nova"};
+  var MESOS=SC.regions.map(function(r){return r.meso;});
+
+  var map=document.getElementById("kr-map");
+  var tip=document.getElementById("kr-tip");
+  var listEl=document.getElementById("kr-list");
+  var filtEl=document.getElementById("kr-filters");
+  var metricsEl=document.getElementById("kr-metrics");
+  var subEl=document.getElementById("kr-sub");
+  var selMeso=null, selName=null, query="";
+
+  function xyOf(l){ if(l._xy) return l._xy; var p=SC.proj(l.lon,l.lat); l._xy=p; return p; }
+  function regTotal(m){ return LIDERES.filter(function(l){return l.meso===m;}).reduce(function(s,l){return s+l.votos;},0); }
+  function regColor(t){ if(t===0)return getVar("--base"); if(t<10000)return "#f3c4b8"; if(t<20000)return "#dc5b48"; return "#101010"; }
+  function getVar(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||"#f6ede9"; }
+
+  function drawMap(){
+    map.setAttribute("viewBox","0 0 "+SC.W+" "+SC.H);
+    map.innerHTML="";
+    var gReg=document.createElementNS(SVGNS,"g");
+    SC.regions.forEach(function(r){
+      var p=document.createElementNS(SVGNS,"path");
+      p.setAttribute("d",r.d); p.setAttribute("class","regiao"+(selMeso&&selMeso!==r.meso?" dim":""));
+      p.setAttribute("fill",regColor(regTotal(r.meso)));
+      p.addEventListener("click",function(){ selMeso=selMeso===r.meso?null:r.meso; selName=null; render(); });
+      gReg.appendChild(p);
+    });
+    map.appendChild(gReg);
+    var gLbl=document.createElementNS(SVGNS,"g");
+    SC.regions.forEach(function(r){
+      var t=document.createElementNS(SVGNS,"text");
+      t.setAttribute("x",r.c[0]); t.setAttribute("y",r.c[1]); t.setAttribute("text-anchor","middle");
+      var dark=regTotal(r.meso)>=20000 || (regColor(regTotal(r.meso))==="#dc5b48");
+      t.setAttribute("fill", dark?"#fff":"#1c1c1c");
+      t.setAttribute("class","kr-map-lbl"+(selMeso&&selMeso!==r.meso?" dim":""));
+      t.setAttribute("opacity","0.92"); t.textContent=r.label;
+      gLbl.appendChild(t);
+    });
+    map.appendChild(gLbl);
+    var gPin=document.createElementNS(SVGNS,"g");
+    LIDERES.forEach(function(l){
+      var xy=xyOf(l);
+      var g=document.createElementNS(SVGNS,"g");
+      g.setAttribute("class","kr-pin"+(l.nome===selName?" sel":"")+((selMeso&&selMeso!==l.meso)?" dim":""));
+      var halo=document.createElementNS(SVGNS,"circle"); halo.setAttribute("cx",xy[0]); halo.setAttribute("cy",xy[1]); halo.setAttribute("r","7"); halo.setAttribute("class","halo");
+      var core=document.createElementNS(SVGNS,"circle"); core.setAttribute("cx",xy[0]); core.setAttribute("cy",xy[1]); core.setAttribute("r","4"); core.setAttribute("class","core");
+      g.appendChild(halo); g.appendChild(core);
+      g.addEventListener("mouseenter",function(){ showTip(l,xy); });
+      g.addEventListener("mouseleave",function(){ tip.style.opacity="0"; });
+      g.addEventListener("click",function(){ openDrawer(l); });
+      gPin.appendChild(g);
+    });
+    map.appendChild(gPin);
+  }
+  function showTip(l,xy){
+    tip.innerHTML="<b>"+l.nome+"</b> · "+l.cidade;
+    var r=map.getBoundingClientRect();
+    tip.style.left=(xy[0]/SC.W*r.width)+"px";
+    tip.style.top=(xy[1]/SC.H*r.height)+"px";
+    tip.style.opacity="1";
+  }
+
+  function drawFilters(){
+    filtEl.innerHTML="";
+    var mk=function(lbl,val){
+      var b=document.createElement("button"); b.className="kr-filter"+((val||null)===selMeso?" active":""); b.textContent=lbl;
+      b.addEventListener("click",function(){ selMeso=val||null; selName=null; render(); });
+      filtEl.appendChild(b);
+    };
+    mk("Todas",null);
+    MESOS.forEach(function(m){ mk(SC.regions.find(function(r){return r.meso===m;}).label,m); });
+  }
+
+  function drawList(){
+    listEl.innerHTML="";
+    var q=norm(query);
+    var byMeso={};
+    LIDERES.forEach(function(l){
+      if(selMeso&&l.meso!==selMeso) return;
+      if(q && norm(l.nome).indexOf(q)<0 && norm(l.cidade).indexOf(q)<0) return;
+      (byMeso[l.meso]||(byMeso[l.meso]=[])).push(l);
+    });
+    var mesos=Object.keys(byMeso);
+    if(!mesos.length){ listEl.innerHTML='<p style="color:var(--muted);font-size:13px;padding:20px 0;text-align:center;">Nenhuma liderança encontrada.</p>'; return; }
+    mesos.forEach(function(m){
+      var wrap=document.createElement("div");
+      var lbl=SC.regions.find(function(r){return r.meso===m;}).label;
+      var h='<div class="kr-lid-region-head"><span class="kr-lid-region-name">'+m+'</span><span class="kr-lid-region-count">'+byMeso[m].length+(byMeso[m].length>1?" lideranças":" liderança")+'</span></div>';
+      var rows='<div class="kr-lid-rows">';
+      byMeso[m].sort(function(a,b){return b.votos-a.votos;}).forEach(function(l){
+        var bc=BASE_COR[l.base];
+        rows+='<div class="kr-lid-row'+(l.nome===selName?" sel":"")+'" data-nome="'+l.nome.replace(/"/g,"")+'">'+
+          '<div class="kr-avatar" style="width:34px;height:34px;font-size:13px;">'+l.nome.charAt(0)+'</div>'+
+          '<div class="kr-lid-body"><div class="kr-lid-name">'+l.nome+'</div><div class="kr-lid-meta">'+l.cidade+' · '+l.cargo+'</div></div>'+
+          '<div class="kr-lid-right"><span class="kr-lid-votes-val tabular">'+fmt(l.votos)+'</span>'+
+          '<span class="kr-pill" style="background:'+bc[0]+';color:'+bc[1]+';">'+BASE_LBL[l.base]+'</span></div>'+
+        '</div>';
+      });
+      rows+='</div>';
+      wrap.innerHTML=h+rows;
+      listEl.appendChild(wrap);
+    });
+    listEl.querySelectorAll(".kr-lid-row").forEach(function(row){
+      row.addEventListener("click",function(){
+        var l=LIDERES.find(function(x){return x.nome===row.getAttribute("data-nome");});
+        if(l) openDrawer(l);
+      });
+    });
+  }
+
+  function drawMetrics(){
+    var regioesCobertas=new Set(LIDERES.map(function(l){return l.meso;})).size;
+    var fracas=MESOS.filter(function(m){return regTotal(m)<8000;}).length;
+    metricsEl.innerHTML='<span><b>'+LIDERES.length+'</b> lideranças ativas</span>'+
+      '<span><b>'+regioesCobertas+'</b> de 6 regiões cobertas</span>'+
+      '<span><b>'+fracas+'</b> regiões precisam reforço</span>'+
+      '<span>última atualização há 15min</span>';
+    subEl.textContent="Polis · "+LIDERES.length+" lideranças ativas em "+regioesCobertas+" regiões";
+  }
+
+  function render(){ drawMap(); drawFilters(); drawList(); drawMetrics(); }
+
+  // drawer
+  var dbg=document.getElementById("kr-drawer-bg"), drawer=document.getElementById("kr-drawer");
+  function openDrawer(l){
+    selName=l.nome; drawMap(); drawList();
+    var bc=BASE_COR[l.base];
+    var wl="https://wa.me/55"+l.whats.replace(/\D/g,"");
+    var ativ=l.ativ.map(function(a){return '<div class="kr-ativ-i"><span class="dt"></span><div class="tx">'+a[1]+'<span class="w">'+a[0]+'</span></div></div>';}).join("");
+    drawer.innerHTML='<button class="dclose" id="dclose">×</button>'+
+      '<div class="kr-dhead"><div class="av">'+l.nome.charAt(0)+'</div><div><div class="nm">'+l.nome+'</div><div class="mt">'+l.cidade+' · '+l.meso+'</div></div></div>'+
+      '<div class="kr-dstats"><div class="kr-dstat"><div class="k">Cargo / base</div><div class="v" style="font-size:14px;">'+l.cargo+'</div></div>'+
+      '<div class="kr-dstat"><div class="k">Votos estimados</div><div class="v tabular">'+fmt(l.votos)+'</div></div></div>'+
+      '<div class="kr-dwhats"><span class="wi"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-8.6 15l-1.4 5 5.1-1.3A10 10 0 1012 2zm5.8 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-3.3-1-5.4-4.4-5.6-4.6-.2-.2-1.3-1.8-1.3-3.4s.8-2.4 1.1-2.7c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.3-.1.6.2.3.9 1.4 1.9 2.2 1.2 1 2.1 1.3 2.4 1.4.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l2 1c.2.1.4.2.4.3.1.2.1.7-.2 1.4z"/></svg></span>'+
+      '<div class="wn"><div class="lbl">WhatsApp</div><div class="num">+55 '+l.whats+'</div></div><a href="'+wl+'" target="_blank" rel="noopener">Abrir conversa</a></div>'+
+      '<div class="kr-dsec-t">Relacionamento</div>'+
+      '<div class="kr-crm-actions">'+
+        '<button type="button" data-act="material"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H4z"/><path d="M4 8h16M8 12h5"/><path d="M12 20v-4"/></svg>Enviar material</button>'+
+        '<button type="button" data-act="msg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Enviar mensagem</button>'+
+      '</div>'+
+      '<div class="kr-dsec-t">Materiais enviados pra ela</div>'+
+      '<div class="kr-sent">'+
+        '<div class="kr-sent-i"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg></span><div class="tx">Card "Saúde na atenção básica"<span class="w">enviado há 2 dias · Hermes</span></div><span class="st">visto</span></div>'+
+        '<div class="kr-sent-i"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v14M5 10l7 7 7-7"/><path d="M5 21h14"/></svg></span><div class="tx">Kit de santinhos · 200 un<span class="w">enviado há 5 dias</span></div><span class="st">recebido</span></div>'+
+      '</div>'+
+      '<div class="kr-dsec-t">O que ela mandou pra campanha</div><div class="kr-ativ">'+ativ+'</div>';
+    document.getElementById("dclose").addEventListener("click",closeDrawer);
+    drawer.querySelectorAll(".kr-crm-actions button").forEach(function(b){
+      b.addEventListener("click",function(){
+        var a=b.getAttribute("data-act");
+        toast(a==="material"?("Material enviado pra "+l.nome.split(" ")[0]+" no WhatsApp"):("Mensagem enviada pra "+l.nome.split(" ")[0]));
+      });
+    });
+    dbg.classList.add("open"); drawer.classList.add("open");
+  }
+  function closeDrawer(){ dbg.classList.remove("open"); drawer.classList.remove("open"); selName=null; drawMap(); drawList(); }
+  dbg.addEventListener("click",closeDrawer);
+
+  // modal cadastrar
+  var mbg=document.getElementById("kr-modal-bg");
+  var fReg=document.getElementById("f-regiao");
+  MESOS.forEach(function(m){ var o=document.createElement("option"); o.value=m; o.textContent=m; fReg.appendChild(o); });
+  document.getElementById("kr-cadastrar").addEventListener("click",function(){ mbg.classList.add("open"); document.getElementById("f-nome").focus(); });
+  document.getElementById("f-cancel").addEventListener("click",function(){ mbg.classList.remove("open"); });
+  mbg.addEventListener("click",function(e){ if(e.target===mbg) mbg.classList.remove("open"); });
+  document.getElementById("f-save").addEventListener("click",function(){
+    var nome=document.getElementById("f-nome").value.trim()||"Nova liderança";
+    var cidade=document.getElementById("f-cidade").value.trim()||"—";
+    var meso=fReg.value;
+    var cargo=document.getElementById("f-cargo").value.trim()||"liderança";
+    var votos=parseInt(document.getElementById("f-votos").value,10)||1000;
+    var whats=document.getElementById("f-whats").value.trim()||"48 90000-0000";
+    // posiciona perto do centro da região + pequeno deslocamento
+    var reg=SC.regions.find(function(r){return r.meso===meso;});
+    var off=function(){return (Math.random()-0.5)*80;};
+    var novo={nome:nome,cidade:cidade,meso:meso,cargo:cargo,votos:votos,base:"nova",whats:whats,
+      _xy:[reg.c[0]+off(),reg.c[1]+off()],
+      ativ:[["agora","Cadastrada no Kratos — pronta pra mobilizar"]]};
+    LIDERES.push(novo);
+    mbg.classList.remove("open");
+    ["f-nome","f-cidade","f-cargo","f-votos","f-whats"].forEach(function(id){document.getElementById(id).value="";});
+    selMeso=null; render();
+    toast("✓ "+nome+" cadastrada — apareceu no mapa");
+  });
+
+  // toast
+  var toastEl=document.getElementById("kr-toast"), toastT;
+  function toast(msg){ toastEl.innerHTML='<span class="ck">✓</span>'+msg.replace(/^✓ /,""); toastEl.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(function(){toastEl.classList.remove("show");},3200); }
+
+  document.getElementById("kr-search").addEventListener("input",function(e){ query=e.target.value; drawList(); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape"){ closeDrawer(); mbg.classList.remove("open"); } });
+
+  render();
+  window.addEventListener("resize",drawMap);
+})();
+</script>
+<script src="assets/demo-guide.js" defer></script>
+</body>
+</html>

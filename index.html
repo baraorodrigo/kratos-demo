@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kratos — O cérebro da sua campanha</title>
+<link rel="stylesheet" href="assets/kratos-fonts.css">
+<style>
+  :root{
+    --preto:#0d0b0a; --coral:#dc5b48; --coral-suave:#eaa89b; --coral-hover:#c94e3c;
+    --verde:#7cc47c; --paper:#f2ebda;
+    --font:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+    --ease:cubic-bezier(0.16,1,0.3,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:var(--font);
+    background:radial-gradient(130% 130% at 68% 18%, #241b17 0%, var(--preto) 58%);
+    color:#f4ede2; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    text-align:center; padding:32px 24px; overflow:hidden; position:relative;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* textura de grid sutil */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; opacity:.05;
+    background-image:linear-gradient(#5a4a37 1px,transparent 1px),linear-gradient(90deg,#5a4a37 1px,transparent 1px);
+    background-size:34px 34px;
+  }
+  /* brilho coral atrás */
+  body::after{
+    content:""; position:fixed; width:60vw; height:60vw; max-width:720px; max-height:720px;
+    top:-14%; right:-6%; border-radius:50%; pointer-events:none; z-index:0;
+    background:radial-gradient(circle, rgba(220,91,72,.20) 0%, transparent 68%);
+    filter:blur(20px);
+  }
+  .stage{position:relative; z-index:2; max-width:760px;}
+  .rise{opacity:0; transform:translateY(16px); animation:rise .7s var(--ease) forwards;}
+  .rise:nth-child(1){animation-delay:.05s}.rise:nth-child(2){animation-delay:.15s}.rise:nth-child(3){animation-delay:.26s}.rise:nth-child(4){animation-delay:.38s}.rise:nth-child(5){animation-delay:.5s}.rise:nth-child(6){animation-delay:.62s}
+  @keyframes rise{to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion:reduce){.rise{animation:none;opacity:1;transform:none;}}
+
+  .pulse{width:13px;height:13px;border-radius:50%;background:var(--coral);margin:0 auto 30px;
+    box-shadow:0 0 0 0 rgba(220,91,72,.7); animation:bp 2.4s infinite;}
+  @keyframes bp{0%{box-shadow:0 0 0 0 rgba(220,91,72,.5);}70%{box-shadow:0 0 0 24px rgba(220,91,72,0);}100%{box-shadow:0 0 0 0 rgba(220,91,72,0);}}
+
+  .logo{height:clamp(42px,6vw,68px); filter:invert(1); margin-bottom:26px;}
+  .badge{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#c9b79f;border:1px solid #3a2f24;padding:5px 13px;border-radius:999px;margin-bottom:30px;}
+  .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--coral);}
+  h1{font-size:clamp(34px,6.4vw,74px);font-weight:800;line-height:1.02;letter-spacing:-0.025em;margin-bottom:22px;color:#fff;}
+  h1 .hl{color:var(--coral);}
+  .sub{font-size:clamp(15px,2vw,21px);line-height:1.55;color:#bcae9e;max-width:44ch;margin:0 auto 40px;}
+
+  .actions{display:flex;flex-direction:column;align-items:center;gap:18px;}
+  .cta{display:inline-flex;align-items:center;gap:11px;background:var(--coral);color:#fff;font-weight:800;
+    font-size:clamp(16px,1.9vw,20px);padding:17px 34px;border-radius:999px;text-decoration:none;
+    box-shadow:0 16px 40px rgba(220,91,72,.32); transition:transform .18s var(--ease),background .18s;}
+  .cta:hover{background:var(--coral-hover);transform:translateY(-2px);}
+  .cta svg{width:19px;height:19px;transition:transform .18s var(--ease);}
+  .cta:hover svg{transform:translateX(4px);}
+  .ghost{display:inline-flex;align-items:center;gap:8px;color:#c9b79f;font-weight:600;font-size:14.5px;text-decoration:none;transition:color .16s;}
+  .ghost:hover{color:#fff;}
+  .ghost svg{width:15px;height:15px;}
+
+  .foot{position:fixed;bottom:24px;left:0;right:0;text-align:center;z-index:2;
+    font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#7a6c5c;}
+  .foot .dg{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--verde);margin-right:7px;vertical-align:middle;}
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="pulse rise"></div>
+    <img class="logo rise" src="assets/kratos-logo.svg" alt="Kratos">
+    <div class="rise"><span class="badge">Demonstração · dados fictícios</span></div>
+    <h1 class="rise">O cérebro da<br>sua <span class="hl">campanha</span>.</h1>
+    <p class="sub rise">Toda a informação, toda a decisão, toda a ação — em um só lugar. Operado por inteligência artificial, comandado por você.</p>
+    <div class="actions rise">
+      <a class="cta" href="apresentacao.html">Assista à apresentação <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="ghost" href="home.html">ou explore o sistema direto <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+  </div>
+  <div class="foot"><span class="dg"></span>Kratos · piloto 2026</div>
+</body>
+</html>

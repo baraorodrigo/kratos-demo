@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jurídico · Kratos</title>
+<link rel="stylesheet" href="assets/kratos-ui.css">
+<style>
+/* ---------- jurídico — só o que o CSS compartilhado não cobre ---------- */
+
+.kr-jur-hero { grid-template-columns:1fr 1fr 1fr; margin-bottom:16px; }
+
+.kr-metric-card { display:flex; flex-direction:column; gap:7px; justify-content:space-between; }
+.kr-metric-sub { font-size:var(--t-xs); color:var(--muted); }
+
+.kr-mid-row { grid-template-columns:1fr 1fr; margin-bottom:16px; align-items:stretch; }
+
+/* timeline calendário eleitoral */
+.kr-timeline { display:flex; flex-direction:column; }
+.kr-tl-item { display:flex; gap:14px; }
+.kr-tl-marker { display:flex; flex-direction:column; align-items:center; flex:none; width:12px; }
+.kr-tl-dot { width:11px; height:11px; border-radius:50%; background:var(--border); border:2px solid var(--muted); flex:none; margin-top:2px; }
+.kr-tl-item.proximo .kr-tl-dot { background:var(--coral); border-color:var(--coral); }
+.kr-tl-item.passado .kr-tl-dot { background:var(--muted); border-color:var(--muted); }
+.kr-tl-line { flex:1; width:1px; background:var(--border); margin-top:2px; }
+.kr-tl-item:last-child .kr-tl-line { display:none; }
+.kr-tl-content { padding-bottom:20px; flex:1; }
+.kr-tl-item:last-child .kr-tl-content { padding-bottom:0; }
+.kr-tl-date { font-size:var(--t-xs); font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+.kr-tl-event { font-size:var(--t-sm); font-weight:600; margin-top:2px; }
+.kr-tl-item.passado .kr-tl-event { color:var(--muted); font-weight:500; }
+.kr-tl-tags { margin-top:6px; display:flex; gap:6px; flex-wrap:wrap; }
+
+/* consultas ao nomos */
+.kr-qa { display:flex; flex-direction:column; gap:16px; }
+.kr-qa-item { padding-bottom:16px; border-bottom:1px solid var(--border); }
+.kr-qa-item:last-child { border-bottom:none; padding-bottom:0; }
+.kr-qa-q { font-size:var(--t-sm); font-weight:600; }
+.kr-qa-a { font-size:var(--t-sm); color:var(--muted); margin-top:4px; }
+.kr-qa-foot { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-top:9px; }
+.kr-qa-source { font-family:var(--font-mono); font-size:var(--t-xs); color:var(--muted); }
+
+.kr-table-card { margin-bottom:0; }
+.kr-table-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+.kr-filters { display:flex; gap:8px; flex-wrap:wrap; }
+.kr-filter { font-family:inherit; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--muted); transition:all var(--dur-fast) var(--ease); }
+.kr-filter:hover { border-color:var(--coral-suave); }
+.kr-filter.active { background:var(--preto); color:#fff; border-color:var(--preto); }
+
+.kr-table-wrap { overflow-x:auto; }
+table.kr-table { width:100%; border-collapse:collapse; min-width:880px; }
+.kr-table th { text-align:left; font-size:var(--t-xs); font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:0 10px 10px; border-bottom:1px solid var(--border); white-space:nowrap; }
+.kr-table td { padding:13px 10px; border-bottom:1px solid var(--border); font-size:var(--t-sm); vertical-align:middle; }
+.kr-table tr:last-child td { border-bottom:none; }
+
+.kr-assunto b { display:block; font-weight:600; }
+.kr-assunto span { display:block; font-size:var(--t-xs); color:var(--muted); margin-top:2px; }
+
+.kr-risk { display:inline-flex; align-items:center; gap:6px; font-size:var(--t-sm); font-weight:600; white-space:nowrap; }
+.kr-risk .dot { width:8px; height:8px; border-radius:50%; flex:none; }
+.kr-risk.alto { color:var(--vermelho); }
+.kr-risk.alto .dot { background:var(--vermelho); }
+.kr-risk.medio { color:#7a5a10; }
+.kr-risk.medio .dot { background:#e0ab3f; }
+.kr-risk.baixo { color:#2c6e2c; }
+.kr-risk.baixo .dot { background:var(--verde); }
+
+.kr-pill.vermelho { background:color-mix(in srgb, var(--vermelho) 20%, white); color:var(--vermelho); }
+
+.kr-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-top:20px; font-size:var(--t-xs); color:var(--muted); }
+
+/* skeleton, usado só no estado loading comentado abaixo */
+.kr-skel { display:inline-block; background:linear-gradient(90deg, var(--border) 25%, var(--base) 50%, var(--border) 75%); background-size:200% 100%; border-radius:var(--r-sm); animation:krskel 1.4s infinite; }
+@keyframes krskel { 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+
+@media (max-width:900px) {
+  .kr-jur-hero { grid-template-columns:1fr; }
+  .kr-mid-row { grid-template-columns:1fr; }
+}
+</style>
+<link rel="stylesheet" href="assets/demo-guide.css">
+</head>
+<body>
+
+<div class="kr-shell">
+
+  <aside class="kr-side">
+    <div class="kr-brand"><img src="assets/kratos-logo.svg" alt="Kratos"></div>
+    <div class="kr-user">
+      <div class="kr-avatar">R</div>
+      <div style="flex:1;min-width:0;">
+        <div class="nm">Rodrigo Barão</div>
+        <div class="rl">admin</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <nav class="kr-nav">
+      <a href="home.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span>
+        <span>Dashboard</span>
+      </a>
+      <a href="home.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+        <span>Comando</span>
+      </a>
+      <a href="pendencia-detalhe.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2 3h6l2-3h4"/><path d="M5 12 3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2l-2 7"/><path d="M3 12v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6"/></svg></span>
+        <span>Pendências</span>
+        <span class="ct">7</span>
+      </a>
+      <a href="war-room-crise.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14 6 10z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></span>
+        <span>Alertas</span>
+        <span class="ct">2</span>
+      </a>
+      <a href="financeiro.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><rect x="14.5" y="12.5" width="4.5" height="3" rx="1"/></svg></span>
+        <span>Financeiro</span>
+      </a>
+      <a href="juridico.html" class="active">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M4 7 2 12a2.6 2.6 0 0 0 5 0L5 7z"/><path d="M20 7l-2 5a2.6 2.6 0 0 0 5 0l-2-5z"/><path d="M8 21h8"/></svg></span>
+        <span>Jurídico</span>
+      </a>
+      <a href="territorio.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg></span>
+        <span>Território</span>
+      </a>
+      <a href="conteudo.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17l5-5 3 3 4-5 4 5"/></svg></span>
+        <span>Conteúdo</span>
+        <span class="ct">3</span>
+      </a>
+      <a href="agenda.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+        <span>Agenda</span>
+      </a>
+      <a href="pesquisa.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="20" y1="20" x2="15.5" y2="15.5"/></svg></span>
+        <span>Pesquisa</span>
+      </a>
+      <a href="monitoramento.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 13 7 13 9 7 13 19 16 13 22 13"/></svg></span>
+        <span>Monitoramento</span>
+      </a>
+      <a href="configuracao.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></span>
+        <span>Configuração</span>
+      </a>
+      <a href="auditoria.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <span>Auditoria</span>
+      </a>
+    </nav>
+
+    <div class="kr-promo">
+      <p>Ative módulos premium</p>
+      <button type="button">Ver módulos</button>
+    </div>
+  </aside>
+
+  <div class="kr-main">
+    <header class="kr-topbar">
+      <span class="kr-crumb">Jurídico</span>
+      <div class="kr-status">
+        <span class="kr-dot"></span>
+        <span>Hermes on-line</span>
+        <span>·</span>
+        <span class="tabular">24 jul 2026 · 14:23</span>
+        <span>·</span>
+        <span>v0.3.1</span>
+      </div>
+    </header>
+
+    <main class="kr-content">
+
+      <div class="kr-screen-head">
+        <div>
+          <h1 class="kr-h1">Jurídico</h1>
+          <p class="kr-sub">Nomos · compliance eleitoral 2026</p>
+        </div>
+        <button type="button" class="kr-btn primary">Nova consulta</button>
+      </div>
+
+      <!-- hero: alertas de conduta + escalados + prazos -->
+      <section class="kr-grid kr-jur-hero">
+        <div class="kr-card kr-metric-card">
+          <div>
+            <p class="kr-metric-label">Alertas de conduta</p>
+            <p class="kr-metric-value tabular">2</p>
+          </div>
+          <span class="kr-pill ambar">1 conduta vedada próxima</span>
+        </div>
+
+        <div class="kr-card kr-metric-card">
+          <div>
+            <p class="kr-metric-label">Escalados ao advogado</p>
+            <p class="kr-metric-value tabular">3</p>
+          </div>
+          <p class="kr-metric-sub">aguardando parecer</p>
+          <span class="kr-pill vermelho">1 urgente</span>
+        </div>
+
+        <div class="kr-card kr-metric-card">
+          <div>
+            <p class="kr-metric-label">Prazos eleitorais</p>
+            <p class="kr-metric-value tabular">12 dias</p>
+          </div>
+          <p class="kr-metric-sub">prestação parcial</p>
+          <span class="kr-pill azul">próximo: propaganda 16 ago</span>
+        </div>
+      </section>
+
+      <!-- calendário eleitoral + consultas ao nomos -->
+      <section class="kr-grid kr-mid-row">
+        <div class="kr-card">
+          <p class="kr-card-title">Calendário eleitoral 2026</p>
+          <div class="kr-timeline">
+            <div class="kr-tl-item proximo">
+              <div class="kr-tl-marker"><span class="kr-tl-dot"></span><span class="kr-tl-line"></span></div>
+              <div class="kr-tl-content">
+                <p class="kr-tl-date tabular">12 ago</p>
+                <p class="kr-tl-event">Prestação de contas parcial</p>
+                <div class="kr-tl-tags"><span class="kr-pill ambar">12 dias</span></div>
+              </div>
+            </div>
+            <div class="kr-tl-item proximo">
+              <div class="kr-tl-marker"><span class="kr-tl-dot"></span><span class="kr-tl-line"></span></div>
+              <div class="kr-tl-content">
+                <p class="kr-tl-date tabular">15 ago</p>
+                <p class="kr-tl-event">Início período de propaganda</p>
+              </div>
+            </div>
+            <div class="kr-tl-item">
+              <div class="kr-tl-marker"><span class="kr-tl-dot"></span><span class="kr-tl-line"></span></div>
+              <div class="kr-tl-content">
+                <p class="kr-tl-date tabular">16 ago</p>
+                <p class="kr-tl-event">Propaganda em rua permitida</p>
+              </div>
+            </div>
+            <div class="kr-tl-item">
+              <div class="kr-tl-marker"><span class="kr-tl-dot"></span><span class="kr-tl-line"></span></div>
+              <div class="kr-tl-content">
+                <p class="kr-tl-date tabular">6 set</p>
+                <p class="kr-tl-event">Início propaganda rádio/TV</p>
+              </div>
+            </div>
+            <div class="kr-tl-item">
+              <div class="kr-tl-marker"><span class="kr-tl-dot"></span><span class="kr-tl-line"></span></div>
+              <div class="kr-tl-content">
+                <p class="kr-tl-date tabular">2 out</p>
+                <p class="kr-tl-event">Fim da propaganda</p>
+              </div>
+            </div>
+            <div class="kr-tl-item">
+              <div class="kr-tl-marker"><span class="kr-tl-dot"></span><span class="kr-tl-line"></span></div>
+              <div class="kr-tl-content">
+                <p class="kr-tl-date tabular">4 out</p>
+                <p class="kr-tl-event">1º turno</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card">
+          <p class="kr-card-title">Consultas ao Nomos</p>
+          <div class="kr-qa">
+            <div class="kr-qa-item">
+              <p class="kr-qa-q">Posso contratar fotógrafo antes de abrir conta?</p>
+              <p class="kr-qa-a">Não — despesa antes do registro é irregular. Aguarde CNPJ de campanha.</p>
+              <div class="kr-qa-foot">
+                <span class="kr-qa-source">Res. TSE 23.607</span>
+                <span class="kr-pill verde">respondida</span>
+              </div>
+            </div>
+            <div class="kr-qa-item">
+              <p class="kr-qa-q">Posso usar imagem de apoiador em post?</p>
+              <p class="kr-qa-a">Sim, com autorização documentada de uso de imagem.</p>
+              <div class="kr-qa-foot">
+                <span></span>
+                <span class="kr-pill verde">respondida</span>
+              </div>
+            </div>
+            <div class="kr-qa-item">
+              <p class="kr-qa-q">Rifa para arrecadar é permitida?</p>
+              <p class="kr-qa-a">Escalado ao advogado — depende de modalidade.</p>
+              <div class="kr-qa-foot">
+                <span></span>
+                <span class="kr-pill ambar">escalada</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- tabela de casos aguardando parecer -->
+      <section class="kr-card kr-table-card">
+        <div class="kr-table-head">
+          <p class="kr-card-title" style="margin-bottom:0;">Casos aguardando parecer</p>
+          <div class="kr-filters">
+            <button type="button" class="kr-pill kr-filter active">Todos</button>
+            <button type="button" class="kr-pill kr-filter">Conduta vedada</button>
+            <button type="button" class="kr-pill kr-filter">Uso de imagem</button>
+            <button type="button" class="kr-pill kr-filter">Contratação</button>
+            <button type="button" class="kr-pill kr-filter">Propaganda</button>
+          </div>
+        </div>
+
+        <!-- TODO STATE: error — Nomos indisponível. Substituir o kr-table-wrap por:
+        <div class="kr-card" style="text-align:center;padding:40px 20px;">
+          <p class="kr-card-title" style="margin-bottom:4px;">Nomos indisponível</p>
+          <p class="kr-metric-sub">Não foi possível carregar os casos agora. Tentando reconectar…</p>
+        </div>
+        -->
+
+        <!-- TODO STATE: empty — nenhum caso no filtro selecionado. Substituir o kr-table-wrap por:
+        <div style="text-align:center;padding:40px 20px;">
+          <p class="kr-metric-sub">Nenhum caso pendente</p>
+        </div>
+        -->
+
+        <!-- TODO STATE: loading — skeleton de linhas enquanto Nomos carrega. Exemplo de linha:
+        <tr>
+          <td><span class="kr-skel" style="width:56px;height:14px;"></span></td>
+          <td><span class="kr-skel" style="width:70px;height:20px;border-radius:999px;"></span></td>
+          <td><span class="kr-skel" style="width:150px;height:14px;margin-bottom:4px;"></span><br><span class="kr-skel" style="width:110px;height:10px;"></span></td>
+          <td><span class="kr-skel" style="width:60px;height:14px;"></span></td>
+          <td><span class="kr-skel" style="width:50px;height:14px;"></span></td>
+          <td><span class="kr-skel" style="width:80px;height:26px;border-radius:999px;"></span></td>
+        </tr>
+        -->
+
+        <div class="kr-table-wrap">
+        <table class="kr-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tipo</th>
+              <th>Assunto</th>
+              <th>Risco</th>
+              <th>Escalado há</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="kr-pill mono">JUR-045</span></td>
+              <td><span class="kr-pill azul">Contratação</span></td>
+              <td class="kr-assunto"><b>Agência de tráfego pago</b><span>possível propaganda antecipada</span></td>
+              <td><span class="kr-risk alto"><span class="dot"></span>Alto</span></td>
+              <td class="tabular">1d 8h</td>
+              <td><a href="#" class="kr-btn outline sm">Ver parecer</a></td>
+            </tr>
+            <tr>
+              <td><span class="kr-pill mono">JUR-043</span></td>
+              <td><span class="kr-pill rosa">Uso de imagem</span></td>
+              <td class="kr-assunto"><b>Vídeo com apoiador</b><span>sem termo assinado</span></td>
+              <td><span class="kr-risk medio"><span class="dot"></span>Médio</span></td>
+              <td class="tabular">2d</td>
+              <td><a href="#" class="kr-btn outline sm">Ver ficha</a></td>
+            </tr>
+            <tr>
+              <td><span class="kr-pill mono">JUR-041</span></td>
+              <td><span class="kr-pill vermelho">Conduta vedada</span></td>
+              <td class="kr-assunto"><b>Evento em prédio público</b><span>na quinta</span></td>
+              <td><span class="kr-risk alto"><span class="dot"></span>Alto</span></td>
+              <td class="tabular">4h</td>
+              <td><a href="#" class="kr-btn primary sm">Revisar</a></td>
+            </tr>
+            <tr>
+              <td><span class="kr-pill mono">JUR-039</span></td>
+              <td><span class="kr-pill ambar">Propaganda</span></td>
+              <td class="kr-assunto"><b>Outdoor em via</b><span>checar regra municipal</span></td>
+              <td><span class="kr-risk medio"><span class="dot"></span>Médio</span></td>
+              <td class="tabular">1d</td>
+              <td><a href="#" class="kr-btn outline sm">Ver ficha</a></td>
+            </tr>
+            <tr>
+              <td><span class="kr-pill mono">JUR-036</span></td>
+              <td><span class="kr-pill outline">Doação</span></td>
+              <td class="kr-assunto"><b>Doação de R$ 8.500</b><span>sem CPF completo</span></td>
+              <td><span class="kr-risk baixo"><span class="dot"></span>Baixo</span></td>
+              <td class="tabular">3d</td>
+              <td><a href="#" class="kr-btn outline sm">Ver ficha</a></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <div class="kr-footer">
+        <span>Cérebro: kratos-cerebro-piloto-2026/juridico · commit 9a3f2e</span>
+        <span>Base RAG: 14 resoluções TSE indexadas</span>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/demo-guide.js" defer></script>
+</body>
+</html>

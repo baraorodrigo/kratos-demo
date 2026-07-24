@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<link rel="stylesheet" href="assets/kratos-fonts.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kratos — Pendência PND-241</title>
+<style>
+.kr-brand{display:flex;align-items:center;padding:4px 6px 12px;}.kr-brand img{height:24px;width:auto;}
+  :root{
+    --base:#f6ede9;
+    --surface:#fdf9f6;
+    --preto:#101010;
+    --coral-suave:#eaa89b;
+    --coral:#dc5b48;
+    --verde:#7cc47c;
+    --vermelho:#e05555;
+    --pill-rosa:#f3c4b8;
+    --pill-verde:#a7d5a7;
+    --pill-azul:#a5c8e5;
+    --pill-ambar:#f5d59c;
+    --texto:#1c1c1c;
+    --texto-sec:#8a7a76;
+    --borda:#eee0da;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", system-ui, sans-serif;
+    background:var(--base);
+    color:var(--texto);
+    font-size:14px;
+    line-height:1.5;
+  }
+  .tabular{font-variant-numeric:tabular-nums;}
+
+  /* ---------- layout shell ---------- */
+  .shell{display:flex;min-height:100vh;}
+
+  /* ---------- sidebar ---------- */
+  .sidebar{
+    width:240px;flex-shrink:0;background:var(--base);
+    position:sticky;top:0;height:100vh;
+    display:flex;flex-direction:column;justify-content:space-between;
+    padding:20px 14px;border-right:1px solid var(--borda);
+  }
+  .sb-user{display:flex;align-items:center;gap:10px;padding:6px 6px 20px;}
+  .avatar{
+    width:36px;height:36px;border-radius:999px;background:var(--coral);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:600;font-size:15px;flex-shrink:0;
+  }
+  .sb-user-info{flex:1;}
+  .sb-user-info .name{font-weight:600;font-size:13px;}
+  .sb-user-info .role{font-size:11px;color:var(--texto-sec);}
+  .chevron{color:var(--texto-sec);}
+
+  .sb-nav{display:flex;flex-direction:column;gap:2px;}
+  .sb-item{
+    display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;
+    color:var(--texto);text-decoration:none;font-size:13px;font-weight:500;position:relative;
+  }
+  .sb-item:hover{background:rgba(220,91,72,0.08);}
+  .sb-item.active{background:var(--pill-rosa);}
+  .sb-icon{
+    width:26px;height:26px;border-radius:8px;border:1.5px solid var(--coral-suave);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--coral);
+  }
+  .sb-item.active .sb-icon{background:var(--coral);border-color:var(--coral);color:#fff;}
+  .sb-badge{
+    margin-left:auto;background:var(--coral);color:#fff;font-size:10px;font-weight:700;
+    padding:1px 6px;border-radius:999px;
+  }
+  .sb-footer{
+    background:var(--preto);border-radius:16px;padding:14px;color:#fff;margin-top:16px;
+  }
+  .sb-footer p{font-size:12px;font-weight:600;margin-bottom:10px;}
+  .sb-footer button{
+    width:100%;background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;
+    padding:7px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;
+  }
+
+  /* ---------- main ---------- */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;}
+
+  /* topbar */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 28px;border-bottom:1px solid var(--borda);
+  }
+  .breadcrumb{font-size:11px;color:var(--texto-sec);font-weight:500;}
+  .topbar-right{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:var(--texto-sec);letter-spacing:0.01em;}
+  .dot-pulse{
+    width:7px;height:7px;border-radius:999px;background:var(--verde);
+    box-shadow:0 0 0 0 rgba(124,196,124,0.6);animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(124,196,124,0.5);}
+    70%{box-shadow:0 0 0 6px rgba(124,196,124,0);}
+    100%{box-shadow:0 0 0 0 rgba(124,196,124,0);}
+  }
+
+  .content{padding:28px;padding-bottom:100px;}
+
+  /* ---------- screen header ---------- */
+  .screen-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:24px;flex-wrap:wrap;}
+  .screen-header h1{font-size:28px;font-weight:700;line-height:1.25;max-width:640px;margin-bottom:10px;}
+  .header-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;}
+  .pill{
+    display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:999px;
+    font-size:11px;font-weight:600;white-space:nowrap;
+  }
+  .pill-mono{font-family:inherit;background:var(--borda);color:var(--texto-sec);font-family:'Courier New',monospace;}
+  .pill-ambar{background:var(--pill-ambar);color:#7a5a10;}
+  .pill-outline{background:transparent;border:1px solid var(--borda);color:var(--texto-sec);}
+  .sev-dot{width:7px;height:7px;border-radius:999px;background:var(--vermelho);}
+  .meta-sep{color:var(--borda);}
+  .meta-txt{color:var(--texto-sec);font-weight:500;}
+  .header-actions{display:flex;gap:8px;flex-shrink:0;}
+  .btn{
+    font-family:inherit;font-size:12.5px;font-weight:600;padding:9px 18px;border-radius:999px;
+    cursor:pointer;border:none;white-space:nowrap;
+  }
+  .btn-outline{background:transparent;border:1px solid var(--borda);color:var(--texto);}
+  .btn-outline:hover{border-color:var(--coral-suave);}
+  .btn-primary{background:var(--coral);color:#fff;}
+  .btn-primary:hover{background:#c94e3c;}
+  .btn-full{width:100%;}
+
+  /* ---------- grid ---------- */
+  .layout-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;}
+  .col-main{display:flex;flex-direction:column;gap:20px;min-width:0;}
+  .col-side{display:flex;flex-direction:column;gap:20px;min-width:0;}
+
+  .card{
+    background:var(--surface);border:1px solid var(--borda);border-radius:20px;padding:22px;
+  }
+  .card-title{font-size:15px;font-weight:600;margin-bottom:14px;}
+  .card-title-row{display:flex;align-items:center;justify-content:between;justify-content:space-between;margin-bottom:14px;}
+  .tag-mono{font-family:'Courier New',monospace;font-size:11px;color:var(--texto-sec);background:var(--base);padding:3px 10px;border-radius:999px;}
+
+  .prose p{font-weight:400;font-size:13.5px;line-height:1.7;color:var(--texto);margin-bottom:12px;}
+  .prose ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+  .prose ul li{font-size:13px;color:var(--texto-sec);position:relative;padding-left:16px;line-height:1.6;}
+  .prose ul li::before{content:"—";position:absolute;left:0;color:var(--coral-suave);}
+
+  /* evidences */
+  .evid-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+  .evid-card{border:1px solid var(--borda);border-radius:12px;overflow:hidden;background:var(--surface);}
+  .evid-thumb{height:100px;background:repeating-linear-gradient(45deg,#efe4de,#efe4de 10px,#f3ebe6 10px,#f3ebe6 20px);}
+  .evid-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;gap:6px;}
+  .platform-pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--pill-azul);color:#274a63;}
+  .evid-time{font-family:'Courier New',monospace;font-size:11px;color:var(--texto-sec);}
+  .evid-metric{font-size:11px;font-weight:600;color:var(--texto);}
+  .align-right{display:flex;justify-content:flex-end;}
+
+  /* cross analysis */
+  .cross-block{padding:16px 0;border-bottom:1px solid var(--borda);}
+  .cross-block:last-child{border-bottom:none;padding-bottom:0;}
+  .cross-block:first-child{padding-top:0;}
+  .cross-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .cross-header .agent-name{font-size:13.5px;font-weight:600;}
+  .cross-body{display:flex;align-items:center;gap:16px;justify-content:space-between;}
+  .cross-text{font-size:13px;color:var(--texto-sec);line-height:1.6;flex:1;}
+  .bairro-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+  .bairro-pill{background:var(--pill-rosa);color:#8a3c2c;font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;}
+
+  /* plan card */
+  .card-plan{border-left:4px solid var(--coral);}
+  .plan-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .plan-header h3{font-size:16px;font-weight:700;}
+  .plan-steps{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:18px;}
+  .plan-step{display:flex;align-items:center;gap:12px;}
+  .step-num{
+    width:24px;height:24px;border-radius:999px;background:var(--coral-suave);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;
+  }
+  .step-text{flex:1;font-size:13px;font-weight:400;}
+  .step-agent{flex-shrink:0;}
+  .step-time{flex-shrink:0;font-size:11px;color:var(--texto-sec);font-weight:500;min-width:64px;text-align:right;}
+  .plan-actions{display:flex;gap:10px;}
+
+  /* side panel */
+  .side-title{font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--texto-sec);margin-bottom:14px;}
+  .kv-list{display:flex;flex-direction:column;gap:10px;}
+  .kv-row{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;}
+  .kv-key{color:var(--texto-sec);font-weight:500;}
+  .kv-val{font-weight:600;text-align:right;}
+  .kv-link{font-family:'Courier New',monospace;font-size:10.5px;color:var(--texto-sec);word-break:break-all;text-align:right;max-width:150px;}
+
+  .quick-actions{display:flex;flex-direction:column;gap:8px;}
+
+  .approve-list{display:flex;flex-direction:column;gap:12px;}
+  .approve-item{display:flex;align-items:center;gap:10px;font-size:12.5px;}
+  .check{width:16px;height:16px;border-radius:999px;flex-shrink:0;border:1.5px solid var(--borda);}
+  .check.done{background:var(--verde);border-color:var(--verde);}
+
+  .timeline{display:flex;flex-direction:column;gap:14px;}
+  .tl-item{display:flex;gap:10px;align-items:flex-start;}
+  .tl-dot{width:8px;height:8px;border-radius:999px;flex-shrink:0;margin-top:5px;}
+  .tl-time{font-family:'Courier New',monospace;font-size:11px;color:var(--texto-sec);min-width:38px;}
+  .tl-desc{font-size:12.5px;color:var(--texto);}
+
+  /* mini svg chart */
+  .mini-chart{flex-shrink:0;}
+
+  /* bottom bar */
+  .bottom-bar{
+    position:fixed;bottom:0;left:0;right:0;height:68px;background:#fff;
+    border-top:1px solid var(--borda);display:flex;align-items:center;justify-content:space-between;
+    padding:0 28px;z-index:20;
+  }
+  .bottom-bar .bb-left{font-family:'Courier New',monospace;font-size:11.5px;color:var(--texto-sec);}
+  .bb-actions{display:flex;gap:10px;}
+
+  /* responsive */
+  @media (max-width:1024px){
+    .layout-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width:900px){
+    .shell{flex-direction:column;}
+    .sidebar{
+      width:100%;height:auto;position:relative;flex-direction:row;align-items:center;
+      overflow-x:auto;padding:12px;
+    }
+    .sb-nav{flex-direction:row;}
+    .sb-footer{display:none;}
+    .sb-user{padding:0 12px 0 0;}
+  }
+</style>
+<link rel="stylesheet" href="assets/demo-guide.css">
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="kr-brand"><img src="assets/kratos-logo.svg" alt="Kratos"></div>
+    <div>
+      <div class="sb-user">
+        <div class="avatar">R</div>
+        <div class="sb-user-info">
+          <div class="name">Rodrigo Barão</div>
+          <div class="role">admin</div>
+        </div>
+        <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <nav class="sb-nav">
+        <a class="sb-item" href="home.html">
+          <span class="sb-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span>
+          Dashboard
+        </a>
+        <a class="sb-item" href="home.html">
+          <span class="sb-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></span>
+          Comando
+        </a>
+        <a class="sb-item active" href="pendencia-detalhe.html">
+          <span class="sb-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>
+          Pendências
+        </a>
+        <a class="sb-item" href="war-room-crise.html">
+          <span class="sb-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg></span>
+          Alertas
+          <span class="sb-badge">2</span>
+        </a>
+        <a class="sb-item" href="financeiro.html">
+          <span class="sb-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span>
+          Financeiro
+        </a>
+        <a class="sb-item" href="juridico.html">
+          <span class="sb-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 4.5V12c0 5-3.6 8.7-9 10-5.4-1.3-9-5-9-10V6.5L12 2z"/></svg></span>
+          Jurídico
+        </a>
+        <a class="sb-item" href="territorio.html">
+          <span class="sb-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/><circle cx="12" cy="12" r="9"/></svg></span>
+          Território
+        </a>
+        <a class="sb-item" href="conteudo.html">
+          <span class="sb-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span>
+          Conteúdo
+          <span class="sb-badge">3</span>
+        </a>
+        <a class="sb-item" href="agenda.html">
+          <span class="sb-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+          Agenda
+        </a>
+        <a class="sb-item" href="pesquisa.html">
+          <span class="sb-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+          Pesquisa
+        </a>
+        <a class="sb-item" href="monitoramento.html">
+          <span class="sb-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></span>
+          Monitoramento
+        </a>
+        <a class="sb-item" href="configuracao.html">
+          <span class="sb-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+          Configuração
+        </a>
+        <a class="sb-item" href="auditoria.html">
+          <span class="sb-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span>
+          Auditoria
+        </a>
+      </nav>
+    </div>
+    <div class="sb-footer">
+      <p>Ative módulos premium</p>
+      <button>Ver módulos</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">Comando › Pendências › PND-241</div>
+      <div class="topbar-right">
+        <span class="dot-pulse"></span>
+        <span>Hermes on-line</span>
+        <span>·</span>
+        <span class="tabular">24 jul 2026 · 14:23</span>
+        <span>·</span>
+        <span>v0.3.1</span>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- SCREEN HEADER -->
+      <div class="screen-header">
+        <div>
+          <h1>Menções cresceram 340% em 6h — tema fiscal</h1>
+          <div class="header-meta">
+            <span class="pill pill-mono">PND-241</span>
+            <span class="pill pill-ambar">Alerta</span>
+            <span class="pill pill-outline">ARGOS</span>
+            <span class="sev-dot"></span>
+            <span class="meta-txt">Severa</span>
+            <span class="meta-sep">·</span>
+            <span class="meta-txt">aberta há 22 min</span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-outline">Escalar advogado</button>
+          <button class="btn btn-outline">Adiar</button>
+          <button class="btn btn-primary">Orquestrar resposta</button>
+        </div>
+      </div>
+
+      <!-- GRID -->
+      <div class="layout-grid">
+
+        <!-- COL MAIN -->
+        <div class="col-main">
+
+          <!-- CARD 1 -->
+          <div class="card">
+            <div class="card-title">O que Argos detectou</div>
+            <div class="prose">
+              <p>Às 04:12 detectamos um post do jornalista @lauracoutinho publicado no X (11.2k seguidores) associando a candidata a supostas irregularidades fiscais em declarações de 2024. O post foi replicado por 3 perfis de alcance médio até 06:20, quando o volume de menções chegou a 120% do baseline. Às 08:00 atingiu 340% e mantém trajetória de crescimento nas últimas 2h.</p>
+              <ul>
+                <li>Sentimento agregado 78% negativo (±3% IC 95%)</li>
+                <li>Tema dominante: "fiscal" / "sonegação"</li>
+                <li>Sub-temas: empresa Alfa, declaração 2024, advogado tributário</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- CARD 2 -->
+          <div class="card">
+            <div class="card-title-row">
+              <div class="card-title" style="margin-bottom:0;">Evidências coletadas</div>
+              <span class="tag-mono">47 total</span>
+            </div>
+            <div class="evid-grid">
+              <div class="evid-card">
+                <div class="evid-thumb"></div>
+                <div class="evid-footer">
+                  <span class="platform-pill">X</span>
+                  <span class="evid-time tabular">04:12</span>
+                  <span class="evid-metric tabular">2.3k likes</span>
+                </div>
+              </div>
+              <div class="evid-card">
+                <div class="evid-thumb"></div>
+                <div class="evid-footer">
+                  <span class="platform-pill">Instagram</span>
+                  <span class="evid-time tabular">05:47</span>
+                  <span class="evid-metric tabular">890 likes</span>
+                </div>
+              </div>
+              <div class="evid-card">
+                <div class="evid-thumb"></div>
+                <div class="evid-footer">
+                  <span class="platform-pill">Threads</span>
+                  <span class="evid-time tabular">06:20</span>
+                  <span class="evid-metric tabular">1.1k likes</span>
+                </div>
+              </div>
+              <div class="evid-card">
+                <div class="evid-thumb"></div>
+                <div class="evid-footer">
+                  <span class="platform-pill">Portal</span>
+                  <span class="evid-time tabular">08:00</span>
+                  <span class="evid-metric tabular">14 comentários</span>
+                </div>
+              </div>
+            </div>
+            <div class="align-right">
+              <button class="btn btn-outline">Ver todas as 47 evidências</button>
+            </div>
+          </div>
+
+          <!-- CARD 3 -->
+          <div class="card">
+            <div class="card-title">Análise cruzada dos agentes</div>
+
+            <div class="cross-block">
+              <div class="cross-header">
+                <span class="agent-name">Nomos · risco jurídico</span>
+                <span class="pill pill-ambar">Revisão pendente</span>
+              </div>
+              <div class="cross-body">
+                <p class="cross-text">Acusação pode configurar difamação se sem lastro. Advogado eleitoral notificado às 09:15. Prazo de resposta: 4h.</p>
+              </div>
+            </div>
+
+            <div class="cross-block">
+              <div class="cross-header">
+                <span class="agent-name">Athena · pesquisa</span>
+              </div>
+              <div class="cross-body">
+                <p class="cross-text">Tema apareceu em 3 pesquisas nos últimos 60 dias. Variação intenção de voto entre 20-29 anos: -1.8pp semana passada.</p>
+                <svg class="mini-chart" width="60" height="30" viewBox="0 0 60 30" fill="none">
+                  <polyline points="0,8 12,14 24,10 36,20 48,17 60,26" stroke="#dc5b48" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="cross-block">
+              <div class="cross-header">
+                <span class="agent-name">Polis · engajamento territorial</span>
+              </div>
+              <p class="cross-text">Bairros com mais menções: Trindade (34%), Centro (22%), Estreito (15%).</p>
+              <div class="bairro-row">
+                <span class="bairro-pill">Trindade · 34%</span>
+                <span class="bairro-pill">Centro · 22%</span>
+                <span class="bairro-pill">Estreito · 15%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 4 - PLAN -->
+          <div class="card card-plan">
+            <div class="plan-header">
+              <h3>Recomendação de orquestração</h3>
+              <span class="pill pill-outline">Strategos</span>
+            </div>
+            <ol class="plan-steps">
+              <li class="plan-step">
+                <span class="step-num">1</span>
+                <span class="step-text">Rascunhar nota de esclarecimento pública</span>
+                <span class="pill pill-outline step-agent">HERMES</span>
+                <span class="step-time tabular">30 min</span>
+              </li>
+              <li class="plan-step">
+                <span class="step-num">2</span>
+                <span class="step-text">Validar risco jurídico da nota</span>
+                <span class="pill pill-outline step-agent">NOMOS + advogado</span>
+                <span class="step-time tabular">15 min</span>
+              </li>
+              <li class="plan-step">
+                <span class="step-num">3</span>
+                <span class="step-text">Aprovar e publicar em @candidata + release imprensa</span>
+                <span class="pill pill-outline step-agent">RODRIGO</span>
+                <span class="step-time tabular">aprovação</span>
+              </li>
+              <li class="plan-step">
+                <span class="step-num">4</span>
+                <span class="step-text">Monitorar tendência pós-resposta próximas 6h</span>
+                <span class="pill pill-outline step-agent">ARGOS</span>
+                <span class="step-time tabular">contínuo</span>
+              </li>
+              <li class="plan-step">
+                <span class="step-num">5</span>
+                <span class="step-text">Registrar decisão + evidências no cérebro</span>
+                <span class="pill pill-outline step-agent">STRATEGOS</span>
+                <span class="step-time tabular">2 min</span>
+              </li>
+            </ol>
+            <div class="plan-actions">
+              <button class="btn btn-primary">Aprovar plano e orquestrar</button>
+              <button class="btn btn-outline">Editar plano</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- COL SIDE -->
+        <div class="col-side">
+
+          <div class="card">
+            <div class="side-title">Informação</div>
+            <div class="kv-list">
+              <div class="kv-row">
+                <span class="kv-key">Aberta</span>
+                <span class="kv-val">há 22 min</span>
+              </div>
+              <div class="kv-row">
+                <span class="kv-key">Severidade</span>
+                <span class="pill pill-ambar" style="background:#f5cccc;color:#9c2b2b;">Severa</span>
+              </div>
+              <div class="kv-row">
+                <span class="kv-key">Agente</span>
+                <span class="pill pill-outline">ARGOS</span>
+              </div>
+              <div class="kv-row">
+                <span class="kv-key">Detectada em</span>
+                <span class="kv-val">menções redes sociais</span>
+              </div>
+              <div class="kv-row">
+                <span class="kv-key">Cérebro</span>
+                <span class="kv-link">memoria/alertas-crise/2026-07-24...</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="side-title">Ações rápidas</div>
+            <div class="quick-actions">
+              <button class="btn btn-outline btn-full">Marcar como resolvida</button>
+              <button class="btn btn-outline btn-full">Escalar advogado agora</button>
+              <button class="btn btn-outline btn-full">Silenciar 24h</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="side-title">Aprovações necessárias</div>
+            <div class="approve-list">
+              <div class="approve-item">
+                <span class="check done"></span>
+                <span>Nomos: análise jurídica preliminar</span>
+              </div>
+              <div class="approve-item">
+                <span class="check"></span>
+                <span>Hermes: rascunho de resposta (em produção)</span>
+              </div>
+              <div class="approve-item">
+                <span class="check"></span>
+                <span>Rodrigo: aprovação final da nota</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="side-title">Timeline</div>
+            <div class="timeline">
+              <div class="tl-item">
+                <span class="tl-dot" style="background:#dc5b48;"></span>
+                <span class="tl-time tabular">14:23</span>
+                <span class="tl-desc">Rodrigo abriu esta pendência</span>
+              </div>
+              <div class="tl-item">
+                <span class="tl-dot" style="background:#f5d59c;"></span>
+                <span class="tl-time tabular">14:20</span>
+                <span class="tl-desc">Notificação enviada ao Dashboard</span>
+              </div>
+              <div class="tl-item">
+                <span class="tl-dot" style="background:#dc5b48;"></span>
+                <span class="tl-time tabular">14:05</span>
+                <span class="tl-desc">Argos escalou como severa (&gt;300%)</span>
+              </div>
+              <div class="tl-item">
+                <span class="tl-dot" style="background:#c9bab3;"></span>
+                <span class="tl-time tabular">08:00</span>
+                <span class="tl-desc">Volume atingiu 340% do baseline</span>
+              </div>
+              <div class="tl-item">
+                <span class="tl-dot" style="background:#e05555;"></span>
+                <span class="tl-time tabular">04:12</span>
+                <span class="tl-desc">Post origem @lauracoutinho</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <span class="bb-left">PND-241 · última atualização há 4min</span>
+  <div class="bb-actions">
+    <button class="btn btn-outline">Rejeitar plano</button>
+    <button class="btn btn-primary">Aprovar plano de resposta</button>
+  </div>
+</div>
+
+<script src="assets/demo-guide.js" defer></script>
+</body>
+</html>

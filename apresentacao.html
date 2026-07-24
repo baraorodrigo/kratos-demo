@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kratos — O cérebro da sua campanha</title>
+<link rel="stylesheet" href="assets/kratos-fonts.css">
+<style>
+  :root{
+    --base:#f6ede9; --white:#fdf9f6; --preto:#0d0b0a; --preto2:#161210;
+    --coral:#dc5b48; --coral-suave:#eaa89b; --coral-deep:#b23a28;
+    --verde:#7cc47c; --vermelho:#e05555; --ambar:#e6a52e; --azul:#5c9ad1;
+    --texto:#1c1c1c; --muted:#8a7a76; --border:#eee0da; --border-dark:#2c2622;
+    --font:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+    --ease:cubic-bezier(0.16,1,0.3,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;overflow:hidden;background:#000;font-family:var(--font);}
+  .tab{font-variant-numeric:tabular-nums;}
+
+  .deck{position:fixed;inset:0;}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+    padding:clamp(26px,5vw,80px);opacity:0;}
+  .slide.active{display:flex;animation:sin .5s var(--ease) forwards;}
+  @keyframes sin{from{opacity:0;}to{opacity:1;}}
+  .slide.dark{background:radial-gradient(120% 120% at 70% 20%, #241b17 0%, var(--preto) 55%);color:var(--white);}
+  .slide.light{background:var(--base);color:var(--texto);}
+  .slide-inner{width:100%;max-width:1120px;margin:0 auto;}
+
+  .slide.active .rise{opacity:0;transform:translateY(16px);animation:rise .6s var(--ease) forwards;}
+  .slide.active .rise:nth-child(1){animation-delay:.05s}
+  .slide.active .rise:nth-child(2){animation-delay:.14s}
+  .slide.active .rise:nth-child(3){animation-delay:.23s}
+  .slide.active .rise:nth-child(4){animation-delay:.32s}
+  .slide.active .rise:nth-child(5){animation-delay:.41s}
+  @keyframes rise{to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion:reduce){.slide.active,.slide.active .rise{animation:none;opacity:1;transform:none;}}
+
+  .eyebrow{font-size:clamp(11px,1.1vw,13px);font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--coral);margin-bottom:20px;}
+  .dark .eyebrow{color:var(--coral-suave);}
+  h1.head{font-size:clamp(28px,4.6vw,56px);font-weight:800;line-height:1.06;letter-spacing:-0.02em;margin-bottom:20px;max-width:17ch;}
+  h1.head.wide{max-width:24ch;}
+  .body{font-size:clamp(15px,1.6vw,20px);line-height:1.55;color:var(--muted);max-width:56ch;}
+  .dark .body{color:#c7b8ac;}
+  .body strong{color:var(--texto);font-weight:600;} .dark .body strong{color:var(--white);}
+  .fecho{margin-top:22px;font-size:clamp(15px,1.9vw,23px);font-weight:700;line-height:1.32;color:var(--texto);max-width:28ch;}
+  .dark .fecho{color:var(--white);} .fecho .hl{color:var(--coral);}
+
+  .capa{align-items:center;text-align:center;}
+  .capa .logo{height:clamp(44px,6.5vw,80px);margin-bottom:32px;filter:invert(1);}
+  .capa h1{font-size:clamp(32px,5.6vw,70px);max-width:none;margin-bottom:18px;}
+  .capa .body{margin:0 auto;text-align:center;}
+  .brainpulse{width:14px;height:14px;border-radius:50%;background:var(--coral);margin:0 auto 28px;
+    box-shadow:0 0 0 0 rgba(220,91,72,.7);animation:bp 2.4s infinite;}
+  @keyframes bp{0%{box-shadow:0 0 0 0 rgba(220,91,72,.55);}70%{box-shadow:0 0 0 26px rgba(220,91,72,0);}100%{box-shadow:0 0 0 0 rgba(220,91,72,0);}}
+  .capa .tagfoot{margin-top:34px;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:#7a6c62;font-weight:600;}
+
+  .cols{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(26px,4vw,56px);align-items:center;}
+  .cols.rev{grid-template-columns:1.15fr 1fr;}
+  @media (max-width:860px){.cols,.cols.rev{grid-template-columns:1fr;gap:22px;}}
+
+  /* browser frame p/ screenshots */
+  .browser{border-radius:13px;overflow:hidden;box-shadow:0 26px 60px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.08);background:#fff;}
+  .dark .browser{border-color:#2c2622;box-shadow:0 30px 70px rgba(0,0,0,.5);}
+  .browser .bbar{background:#ece3d9;padding:9px 13px;display:flex;align-items:center;gap:7px;}
+  .browser .bdot{width:11px;height:11px;border-radius:50%;flex:none;}
+  .browser .burl{margin-left:8px;background:#fff;border-radius:99px;padding:4px 14px;font-size:11px;color:var(--muted);font-weight:600;letter-spacing:0.02em;}
+  .browser img{display:block;width:100%;}
+  .browser.clic{cursor:pointer;transition:transform .18s var(--ease),box-shadow .18s var(--ease);}
+  .browser.clic:hover{transform:translateY(-3px);box-shadow:0 34px 74px rgba(0,0,0,.34);}
+  .browser .opendica{position:absolute;top:10px;right:12px;background:var(--coral);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:0.04em;padding:4px 10px;border-radius:99px;opacity:0;transition:opacity .18s;pointer-events:none;}
+  .browser{position:relative;}
+  .browser.clic:hover .opendica{opacity:1;}
+  .shotcap{margin-top:14px;font-size:13px;color:var(--muted);font-weight:600;text-align:center;}
+  .dark .shotcap{color:#b7a99e;}
+
+  /* full showcase */
+  .showcase{max-width:1180px;}
+  .showcase .browser img{max-height:64vh;object-fit:cover;object-position:top;}
+
+  /* photo hero */
+  .photohero{border-radius:16px;overflow:hidden;box-shadow:0 26px 60px rgba(0,0,0,.3);}
+  .photohero img{display:block;width:100%;height:100%;max-height:66vh;object-fit:cover;}
+
+  /* flow / cards */
+  .flowcards{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+  .fcard{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:14px 15px;}
+  .fcard .k{font-size:10.5px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--coral);margin-bottom:4px;}
+  .fcard .v{font-size:14px;font-weight:600;line-height:1.3;}
+  .fcard .s{font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .srcbubble{background:var(--white);border:1px solid var(--border);border-radius:15px;padding:15px 17px;display:flex;align-items:center;gap:13px;margin-bottom:16px;}
+  .srcbubble .mic{width:42px;height:42px;border-radius:11px;background:var(--coral);flex:none;display:flex;align-items:center;justify-content:center;}
+  .srcbubble .mic svg{width:19px;height:19px;fill:#fff;}
+  .srcbubble .qt{font-size:14px;line-height:1.4;font-style:italic;}
+
+  /* thermometer */
+  .thermo{display:flex;flex-direction:column;gap:14px;margin-top:8px;}
+  .trow{display:flex;align-items:center;gap:14px;}
+  .trow .name{width:120px;flex:none;font-size:14px;font-weight:700;}
+  .trow .name small{display:block;font-size:10.5px;font-weight:500;color:#9a8b7e;}
+  .gauge{flex:1;height:14px;border-radius:99px;background:#2c2622;overflow:hidden;}
+  .gauge > i{display:block;height:100%;border-radius:99px;}
+  .g-hot > i{width:92%;background:linear-gradient(90deg,#e6a52e,#dc5b48,#e05555);}
+  .g-warm > i{width:46%;background:linear-gradient(90deg,#5c9ad1,#7cc47c);}
+  .g-alert > i{width:78%;background:linear-gradient(90deg,#e6a52e,#e05555);}
+  .trow .tag{width:92px;flex:none;text-align:right;font-size:11.5px;font-weight:700;}
+  .tag.hot{color:#e6a52e;} .tag.warm{color:var(--verde);} .tag.alert{color:var(--vermelho);}
+
+  /* agents grid */
+  .agrid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-top:18px;}
+  @media (max-width:860px){.agrid{grid-template-columns:1fr;}}
+  .acard{display:flex;gap:12px;align-items:flex-start;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px 14px;}
+  .acard .ai{width:32px;height:32px;border-radius:9px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;}
+  .acard .an{font-size:13.5px;font-weight:700;} .acard .ad{font-size:11.5px;color:var(--muted);line-height:1.3;margin-top:1px;}
+
+  /* timeline */
+  .tline{display:flex;flex-direction:column;gap:2px;}
+  .titem{display:grid;grid-template-columns:82px 1fr;gap:15px;padding:12px 0;border-bottom:1px solid var(--border);}
+  .titem:last-child{border-bottom:0;}
+  .titem .hr{font-size:15px;font-weight:800;color:var(--coral);}
+  .titem .tx{font-size:13.5px;line-height:1.4;} .titem .tx b{font-weight:700;}
+
+  /* security */
+  .seclist{display:flex;flex-direction:column;gap:13px;max-width:660px;margin-top:18px;}
+  .secitem{display:flex;gap:12px;align-items:flex-start;}
+  .secitem .chk{width:25px;height:25px;border-radius:8px;background:#1e2a1e;border:1px solid #2f4a2f;flex:none;display:flex;align-items:center;justify-content:center;}
+  .secitem .chk svg{width:13px;height:13px;stroke:var(--verde);}
+  .secitem .st{font-size:14.5px;line-height:1.4;color:#c7b8ac;} .secitem .st b{color:#fff;font-weight:600;}
+
+  /* offer */
+  .seal{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:112px;height:112px;border-radius:50%;
+    background:linear-gradient(135deg,#f0d17a,#dca94a);color:#5a3d0e;font-weight:800;text-align:center;box-shadow:0 14px 34px rgba(220,169,74,.4);margin-bottom:22px;}
+  .seal .big{font-size:26px;line-height:1;} .seal .sm{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-top:4px;}
+  .offlist{display:flex;flex-direction:column;gap:12px;max-width:620px;margin-top:18px;}
+  .offitem{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;line-height:1.4;}
+  .offitem .bt{width:9px;height:9px;border-radius:3px;background:var(--coral);flex:none;margin-top:6px;} .offitem b{font-weight:700;}
+
+  .cta-btn{display:inline-block;margin-top:28px;background:var(--coral);color:#fff;font-weight:800;font-size:clamp(15px,1.7vw,20px);padding:15px 30px;border-radius:99px;text-decoration:none;transition:transform .16s var(--ease),background .16s;}
+  .cta-btn:hover{background:var(--coral-hover);transform:translateY(-2px);}
+  .cta-ghost{display:inline-block;margin-top:28px;margin-left:12px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35);font-weight:700;font-size:clamp(14px,1.5vw,18px);padding:14px 26px;border-radius:99px;text-decoration:none;transition:all .16s var(--ease);}
+  .cta-ghost:hover{border-color:#fff;background:rgba(255,255,255,.08);}
+  .countdown{font-size:clamp(13px,1.5vw,16px);color:var(--coral-suave);font-weight:600;margin-top:16px;}
+
+  /* nav */
+  .progress{position:fixed;top:0;left:0;height:3px;background:var(--coral);z-index:50;transition:width .35s var(--ease);}
+  .nav{position:fixed;bottom:18px;right:20px;display:flex;gap:8px;z-index:60;}
+  .nav button{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:#fffd;color:var(--texto);cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;transition:all .15s var(--ease);}
+  .nav button:hover{background:var(--coral);color:#fff;border-color:var(--coral);} .nav button:disabled{opacity:.35;cursor:default;}
+  .counter{position:fixed;bottom:26px;left:22px;font-size:12px;font-weight:700;letter-spacing:0.14em;color:var(--muted);z-index:60;}
+  .clickzone{position:fixed;top:0;bottom:0;width:11vw;z-index:40;cursor:pointer;} .clickzone.left{left:0;}.clickzone.right{right:0;}
+  .brandmark{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:60;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#b7a99e;opacity:.7;}
+  @media (max-width:640px){.clickzone{width:20vw;}}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<div class="deck" id="deck">
+
+  <!-- 1 CAPA -->
+  <section class="slide dark capa">
+    <div class="slide-inner">
+      <div class="brainpulse rise"></div>
+      <img src="assets/kratos-logo.svg" alt="Kratos" class="logo rise">
+      <h1 class="head rise">O cérebro da sua campanha.</h1>
+      <p class="body rise">Toda informação que entra na campanha vira decisão, tarefa e ação — sozinha. Uma inteligência que trabalha por você 24 horas por dia.</p>
+      <div class="tagfoot rise">A sua campanha nunca mais vai dormir</div>
+    </div>
+  </section>
+
+  <!-- 2 A DOR -->
+  <section class="slide light">
+    <div class="slide-inner">
+      <div class="eyebrow rise">A realidade</div>
+      <h1 class="head wide rise">Você tem tudo na cabeça. E é exatamente esse o problema.</h1>
+      <p class="body rise">A demanda daquele bairro ficou num áudio perdido no grupo. A nota do fornecedor sumiu. Ninguém sabe ao certo quanto já foi gasto. E enquanto você apaga incêndio, o adversário anda.</p>
+      <div class="fecho rise">Campanha não se perde por falta de trabalho. <span class="hl">Se perde por falta de organização.</span></div>
+    </div>
+  </section>
+
+  <!-- 3 A VIRADA -->
+  <section class="slide dark">
+    <div class="slide-inner">
+      <div class="eyebrow rise">A virada</div>
+      <h1 class="head rise">E se nada mais se perdesse?</h1>
+      <p class="body rise">Imagine cada áudio, cada foto, cada mensagem da sua equipe virando informação organizada. Imagine abrir o celular e ver a campanha inteira numa tela só. Imagine saber o que o povo fala antes do seu adversário.</p>
+      <div class="fecho rise">Isso não é o futuro. É o Kratos. <span class="hl">E ele já está pronto.</span></div>
+    </div>
+  </section>
+
+  <!-- 4 EQUIPE ALIMENTA (foto real) -->
+  <section class="slide light">
+    <div class="slide-inner cols">
+      <div>
+        <div class="eyebrow rise">Sem formulário. Sem sistema.</div>
+        <h1 class="head rise">Sua equipe já sabe usar o Kratos. Ela usa WhatsApp.</h1>
+        <p class="body rise">Ninguém preenche planilha. Ninguém aprende programa. O coordenador manda um áudio, uma foto, uma mensagem — no WhatsApp ou no Telegram, como já faz o dia todo. O Kratos entende, organiza e guarda.</p>
+        <div class="fecho rise">A sua equipe fala. <span class="hl">O Kratos escuta, entende e trabalha.</span></div>
+      </div>
+      <div class="rise">
+        <div class="photohero"><img src="assets/process/whatsapp-campo.png" alt="Coordenadora mandando áudio no WhatsApp na rua"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 AUDIO VIRA TUDO -->
+  <section class="slide light">
+    <div class="slide-inner">
+      <div class="eyebrow rise">A mágica</div>
+      <h1 class="head wide rise">Um áudio de 15 segundos vira 4 ações.</h1>
+      <div class="rise">
+        <div class="srcbubble">
+          <span class="mic"><svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 003-3V6a3 3 0 00-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 006 6.9V21h2v-2.1A7 7 0 0019 12h-2z"/></svg></span>
+          <span class="qt">"Visitei a associação do bairro São José, o pessoal pediu posto de saúde."</span>
+        </div>
+      </div>
+      <div class="flowcards rise">
+        <div class="fcard"><div class="k">Cadastra a demanda</div><div class="v">Posto de saúde · São José</div><div class="s">Registrada no cérebro da campanha</div></div>
+        <div class="fcard"><div class="k">Mapeia o território</div><div class="v">Bairro entra no mapa</div><div class="s">A cobertura se atualiza</div></div>
+        <div class="fcard"><div class="k">Cria a tarefa</div><div class="v">Agendar visita de retorno</div><div class="s">Com responsável e prazo</div></div>
+        <div class="fcard"><div class="k">Monta seu briefing</div><div class="v">Você acorda sabendo</div><div class="s">Entra no resumo do dia</div></div>
+      </div>
+      <div class="fecho rise">Um áudio no grupo. Quatro coisas resolvidas. <span class="hl">Zero esforço.</span></div>
+    </div>
+  </section>
+
+  <!-- 6 FOTO DA NOTA (foto real + screenshot financeiro) -->
+  <section class="slide light">
+    <div class="slide-inner cols rev">
+      <div class="rise">
+        <div class="photohero"><img src="assets/process/nota-foto.png" alt="Foto de nota fiscal sendo tirada"></div>
+      </div>
+      <div>
+        <div class="eyebrow rise">A dor que tira seu sono</div>
+        <h1 class="head rise">A foto de uma nota vira sua prestação de contas.</h1>
+        <p class="body rise">A equipe fotografa a nota no grupo. O Kratos lê o valor, o CNPJ, a data. Arquiva sozinho na pasta certa e atualiza o seu teto de gastos na hora.</p>
+        <div class="fecho rise">Pronta o tempo todo. Nunca na véspera. <span class="hl">Nunca estourando o teto.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 SHOWCASE: CONTROLE DE MISSAO (screenshot real) -->
+  <section class="slide light">
+    <div class="slide-inner showcase" style="text-align:center;">
+      <div class="eyebrow rise">O sistema, de verdade</div>
+      <h1 class="head rise" style="margin:0 auto 20px;max-width:22ch;">A campanha inteira numa tela só.</h1>
+      <div class="rise browser" style="max-width:1000px;margin:0 auto;">
+        <div class="bbar"><span class="bdot" style="background:#ff5f57;"></span><span class="bdot" style="background:#febc2e;"></span><span class="bdot" style="background:#28c840;"></span><span class="burl">kratos.nexuseng.io</span></div>
+        <img src="assets/shots/comando.png" alt="Painel de comando do Kratos">
+      </div>
+      <div class="shotcap rise">Controle de Missão · o que decidir hoje, onde está o dinheiro, o que o povo pede, o que está em risco.</div>
+    </div>
+  </section>
+
+  <!-- 8 TERMOMETRO (screenshot monitoramento + termômetro) -->
+  <section class="slide dark">
+    <div class="slide-inner cols">
+      <div>
+        <div class="eyebrow rise">O termômetro</div>
+        <h1 class="head rise">Você sabe o que o povo fala antes do adversário.</h1>
+        <p class="body rise">O Kratos está nos grupos de WhatsApp, no Instagram, no X, no Telegram. Escuta tudo que se fala sobre você e mede a temperatura de cada assunto.</p>
+        <div class="thermo rise">
+          <div class="trow"><div class="name">Saúde</div><div class="gauge g-hot"><i></i></div><div class="tag hot">BOMBANDO</div></div>
+          <div class="trow"><div class="name">Segurança</div><div class="gauge g-warm"><i></i></div><div class="tag warm">esfriando</div></div>
+          <div class="trow"><div class="name">Boato fiscal</div><div class="gauge g-alert"><i></i></div><div class="tag alert">RISCO</div></div>
+        </div>
+        <div class="fecho rise">Enquanto o adversário acha que sabe, <span class="hl">você sabe de verdade.</span></div>
+      </div>
+      <div class="rise">
+        <div class="browser">
+          <div class="bbar"><span class="bdot" style="background:#ff5f57;"></span><span class="bdot" style="background:#febc2e;"></span><span class="bdot" style="background:#28c840;"></span><span class="burl">kratos.nexuseng.io/monitoramento</span></div>
+          <img src="assets/shots/monitoramento.png" alt="Tela de monitoramento das redes">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 WAR ROOM (screenshot warroom) -->
+  <section class="slide dark">
+    <div class="slide-inner cols rev">
+      <div class="rise">
+        <div class="browser">
+          <div class="bbar"><span class="bdot" style="background:#ff5f57;"></span><span class="bdot" style="background:#febc2e;"></span><span class="bdot" style="background:#28c840;"></span><span class="burl">kratos.nexuseng.io/crise</span></div>
+          <img src="assets/shots/warroom.png" alt="War Room de crise do Kratos">
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow rise">A sala de guerra</div>
+        <h1 class="head rise">A crise não te pega de surpresa. Nunca mais.</h1>
+        <p class="body rise">No momento em que um ataque começa a se espalhar, o Kratos detecta — antes de crescer. Junta as provas, acha a origem e monta o plano de resposta. Você entra na sala de guerra e decide.</p>
+        <div class="fecho rise">O adversário reage no desespero. <span class="hl">Você responde com estratégia.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 TERRITORIO (screenshot territorio) -->
+  <section class="slide light">
+    <div class="slide-inner cols">
+      <div>
+        <div class="eyebrow rise">O território na palma da mão</div>
+        <h1 class="head rise">Cada bairro, cada demanda, cada voto.</h1>
+        <p class="body rise">O Kratos mostra onde o povo pede o quê, quais bairros estão descobertos e onde vale a pena ir. Sua agenda deixa de ser achismo e passa a ser estratégia.</p>
+        <div class="fecho rise">Você não visita no escuro. <span class="hl">Você vai onde o voto está.</span></div>
+      </div>
+      <div class="rise">
+        <div class="browser">
+          <div class="bbar"><span class="bdot" style="background:#ff5f57;"></span><span class="bdot" style="background:#febc2e;"></span><span class="bdot" style="background:#28c840;"></span><span class="burl">kratos.nexuseng.io/territorio</span></div>
+          <img src="assets/shots/territorio.png" alt="Mapa de território do Kratos">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 AGENTES -->
+  <section class="slide light">
+    <div class="slide-inner">
+      <div class="eyebrow rise">A equipe que nunca dorme</div>
+      <h1 class="head rise">Sete especialistas trabalhando por você. Dia e noite.</h1>
+      <div class="agrid rise">
+        <div class="acard"><span class="ai" style="background:#1c1c1c;">S</span><div><div class="an">Strategos — o diretor</div><div class="ad">Vê o jogo inteiro e diz o próximo passo.</div></div></div>
+        <div class="acard"><span class="ai" style="background:#3a7a3a;">D</span><div><div class="an">Drachma — o financeiro</div><div class="ad">Cada centavo no lugar, o teto sob controle.</div></div></div>
+        <div class="acard"><span class="ai" style="background:#8b6fc9;">N</span><div><div class="an">Nomos — o conselheiro</div><div class="ad">Te diz o que pode, pra você não errar.</div></div></div>
+        <div class="acard"><span class="ai" style="background:var(--coral);">H</span><div><div class="an">Hermes — a comunicação</div><div class="ad">Conteúdo e mensagem, na voz e na hora certa.</div></div></div>
+        <div class="acard"><span class="ai" style="background:#c98a1e;">P</span><div><div class="an">Polis — o território</div><div class="ad">Cada bairro, cada demanda, cada base mapeada.</div></div></div>
+        <div class="acard"><span class="ai" style="background:#5c9ad1;">A</span><div><div class="an">Athena — a inteligência</div><div class="ad">Pesquisa, dados e o número que decide.</div></div></div>
+        <div class="acard" style="grid-column:1/-1;"><span class="ai" style="background:var(--vermelho);">A</span><div><div class="an">Argos — o vigia</div><div class="ad">Enxerga tudo nas redes e soa o alarme antes da crise.</div></div></div>
+      </div>
+      <div class="fecho rise">Uma equipe de elite que não tira folga, não pede aumento e <span class="hl">nunca dorme.</span></div>
+    </div>
+  </section>
+
+  <!-- 12 O DIA -->
+  <section class="slide light">
+    <div class="slide-inner cols">
+      <div>
+        <div class="eyebrow rise">O seu dia</div>
+        <h1 class="head rise">Você acorda sabendo exatamente o que fazer.</h1>
+        <p class="body rise">O Kratos trabalha enquanto você dorme. Quando você abre os olhos, a campanha já está organizada esperando por você.</p>
+        <div class="fecho rise">Você para de correr atrás da campanha. <span class="hl">A campanha trabalha pra você.</span></div>
+      </div>
+      <div class="rise">
+        <div class="tline">
+          <div class="titem"><div class="hr">7h</div><div class="tx"><b>Briefing do dia</b> no seu celular: o que rolou, o que decidir, o que pode dar problema.</div></div>
+          <div class="titem"><div class="hr">Reunião</div><div class="tx"><b>Antes de cada compromisso:</b> quem você vai encontrar, o histórico e os temas sensíveis.</div></div>
+          <div class="titem"><div class="hr">21h</div><div class="tx"><b>Fechamento do dia:</b> o que andou, o que ficou, o que decidir amanhã.</div></div>
+          <div class="titem"><div class="hr">Sexta</div><div class="tx"><b>Relatório da semana</b> inteira, na palma da mão.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 SEGURANCA -->
+  <section class="slide dark">
+    <div class="slide-inner">
+      <div class="eyebrow rise">Você no controle</div>
+      <h1 class="head rise">Nada acontece sem a sua palavra final.</h1>
+      <div class="seclist rise">
+        <div class="secitem"><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><div class="st"><b>Nada é publicado sem a sua aprovação.</b> O Kratos prepara; quem decide é você.</div></div>
+        <div class="secitem"><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><div class="st"><b>Feito pra te proteger.</b> Compliance com o TSE e a LGPD por dentro.</div></div>
+        <div class="secitem"><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><div class="st"><b>Cada ação registrada.</b> Total transparência, total rastreabilidade.</div></div>
+        <div class="secitem"><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><div class="st"><b>Seus dados isolados e protegidos.</b> Só a sua campanha entra. Ninguém mais.</div></div>
+      </div>
+      <div class="fecho rise">Poder de uma equipe inteira. <span class="hl">Controle sempre nas suas mãos.</span></div>
+    </div>
+  </section>
+
+  <!-- 14 OFERTA -->
+  <section class="slide light">
+    <div class="slide-inner">
+      <div class="seal rise"><span class="big">01</span><span class="sm">Vaga única</span></div>
+      <div class="eyebrow rise">Vaga de fundador</div>
+      <h1 class="head wide rise">Uma única vaga de piloto neste ciclo. E ela pode ser sua.</h1>
+      <div class="offlist rise">
+        <div class="offitem"><span class="bt"></span><div><b>Preço de fundador.</b> O melhor valor que o Kratos jamais vai ter, travado pra você.</div></div>
+        <div class="offitem"><span class="bt"></span><div><b>Operação assistida.</b> Nós tocamos o Kratos por dentro. Sua equipe só usa o WhatsApp.</div></div>
+        <div class="offitem"><span class="bt"></span><div><b>Vaga única.</b> Um candidato por ciclo. Quem chega primeiro, garante.</div></div>
+      </div>
+      <div class="fecho rise">Enquanto o mercado ainda vai descobrir isso, <span class="hl">você já vai estar na frente.</span></div>
+    </div>
+  </section>
+
+  <!-- 15 CTA -->
+  <section class="slide dark capa">
+    <div class="slide-inner">
+      <div class="eyebrow rise">A hora é agora</div>
+      <h1 class="head rise" style="margin:0 auto 18px;max-width:20ch;">A campanha começa em 16 de agosto. Quem se organiza antes, larga na frente.</h1>
+      <p class="body rise" style="margin:0 auto;">Todo candidato vai ligar o motor no mesmo dia. A diferença vai estar em quem já tem o cérebro da campanha rodando — e quem ainda está montando planilha.</p>
+      <div class="rise"><a class="cta-btn" href="home.html">Explorar a demonstração</a><a class="cta-ghost" href="index.html">Voltar ao início</a></div>
+      <div class="countdown rise">Vamos conversar 20 minutos. Depois dessa conversa, sua campanha nunca mais vai ser a mesma.</div>
+    </div>
+  </section>
+
+</div>
+
+<div class="clickzone left" id="zleft"></div>
+<div class="clickzone right" id="zright"></div>
+<div class="counter"><span id="cur">01</span> / <span id="tot">15</span></div>
+<div class="brandmark">Kratos</div>
+<div class="nav">
+  <button id="prev" aria-label="Anterior">‹</button>
+  <button id="next" aria-label="Próximo">›</button>
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var i=0, n=slides.length;
+  var prog=document.getElementById('prog'), cur=document.getElementById('cur');
+  var prev=document.getElementById('prev'), next=document.getElementById('next');
+  document.getElementById('tot').textContent=String(n).padStart(2,'0');
+  function show(k){
+    i=Math.max(0,Math.min(n-1,k));
+    slides.forEach(function(s,idx){s.classList.toggle('active',idx===i);});
+    prog.style.width=((i+1)/n*100)+'%';
+    cur.textContent=String(i+1).padStart(2,'0');
+    prev.disabled=i===0; next.disabled=i===n-1;
+    var dark=slides[i].classList.contains('dark');
+    document.querySelector('.counter').style.color=dark?'#fff':'';
+    document.querySelector('.brandmark').style.color=dark?'#fff':'';
+  }
+  function go(d){show(i+d);}
+  document.getElementById('zleft').onclick=function(){go(-1);};
+  document.getElementById('zright').onclick=function(){go(1);};
+  prev.onclick=function(){go(-1);}; next.onclick=function(){go(1);};
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(-1);}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(n-1);}
+  });
+  var x0=null;
+  document.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;},{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(x0===null)return; var dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>50)go(dx<0?1:-1); x0=null;
+  },{passive:true});
+  // screenshots clicáveis -> abrem a tela real do mockup
+  var SCRMAP={'kratos.nexuseng.io':'home.html','kratos.nexuseng.io/monitoramento':'monitoramento.html','kratos.nexuseng.io/crise':'war-room-crise.html','kratos.nexuseng.io/territorio':'territorio.html'};
+  document.querySelectorAll('.browser').forEach(function(b){
+    var u=b.querySelector('.burl'); if(!u) return;
+    var href=SCRMAP[u.textContent.trim()]; if(!href) return;
+    b.classList.add('clic');
+    var dica=document.createElement('span'); dica.className='opendica'; dica.textContent='Abrir tela ↗'; b.appendChild(dica);
+    b.addEventListener('click',function(){ window.location.href=href; });
+  });
+
+  show(0);
+})();
+</script>
+</body>
+</html>

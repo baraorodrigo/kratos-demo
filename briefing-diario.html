@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<link rel="stylesheet" href="assets/kratos-fonts.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Briefing Diário — Kratos</title>
+<style>
+  :root {
+    /* Cores — design tokens Kratos (§4 do prompt canônico) */
+    --base: #f6ede9;
+    --surface: #fdf9f6;
+    --preto: #101010;
+    --coral-suave: #eaa89b;
+    --coral: #dc5b48;
+    --coral-hover: #c94e3c;
+    --verde: #7cc47c;
+    --vermelho: #e05555;
+    --pill-rosa: #f3c4b8;
+    --pill-verde: #a7d5a7;
+    --pill-azul: #a5c8e5;
+    --pill-ambar: #f5d59c;
+    --texto: #1c1c1c;
+    --texto-sec: #8a7a76;
+    --borda: #eee0da;
+
+    --s-1: 4px;  --s-2: 8px;  --s-3: 12px;
+    --s-4: 16px; --s-5: 20px; --s-6: 24px;
+    --s-8: 32px; --s-10: 40px; --s-12: 48px;
+
+    /* Tipografia — tokens ABSOLUTOS (§4 canônico). Canvas 1080x1920 é
+       resolução real de tela de celular, não escala nada. */
+    --t-xs: 11px;
+    --t-sm: 13px;
+    --t-base: 14px;
+    --t-md: 15px;
+    --t-lg: 20px;
+    --t-xl: 28px;
+    --t-hero: 96px;
+
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 20px;
+    --r-full: 999px;
+
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-fast: 150ms;
+    --dur-base: 250ms;
+
+    --font-sans:"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #e5d5cc;
+    font-family: var(--font-sans);
+    color: var(--texto);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--s-10) var(--s-4) 140px;
+    gap: var(--s-6);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+
+  /* ---------- Header do viewport (fora do canvas) ---------- */
+  .viewport-header {
+    text-align: center;
+  }
+  .viewport-header h1 {
+    font-size: var(--t-lg);
+    font-weight: 600;
+    color: var(--texto);
+  }
+  .viewport-header p {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    color: var(--texto-sec);
+    margin-top: var(--s-1);
+  }
+
+  /* ---------- Canvas 1080x1920 ---------- */
+  .canvas-wrap {
+    width: 1080px;
+    max-width: 100%;
+    aspect-ratio: 1080 / 1920;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .canvas {
+    width: 1080px;
+    height: 1920px;
+    /* Em telas < 1080px o canvas escala inteiro via transform,
+       mantendo o layout fixo interno idêntico à imagem exportada. */
+    transform-origin: top left;
+    background: var(--base);
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (max-width: 1112px) {
+    .canvas-wrap {
+      width: 100%;
+    }
+    .canvas {
+      transform: scale(calc(100% / 1080 * 1));
+    }
+  }
+
+  /* Escala via CSS custom viewport trick: usamos container query fallback simples */
+  .canvas-scaler {
+    width: 100%;
+    aspect-ratio: 1080 / 1920;
+    position: relative;
+    overflow: hidden;
+  }
+  .canvas-scaler .canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1080px;
+    height: 1920px;
+  }
+
+  /* Nota mobile <500px: canvas exibido em width:100% com aspect-ratio 1080:1920,
+     escalado via CSS zoom para telas estreitas. Decisão documentada no relatório. */
+  @media (max-width: 500px) {
+    .canvas-scaler .canvas {
+      zoom: calc(100vw / 1080);
+    }
+  }
+
+  /* =================== BLOCO 1 — Cabeçalho =================== */
+  .bl-header {
+    height: 200px;
+    background: var(--preto);
+    color: #fff;
+    padding: var(--s-8) var(--s-8) var(--s-6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--s-2);
+  }
+  .bl-header .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--coral-suave);
+  }
+  .bl-header .data {
+    font-size: var(--t-xl);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .bl-header .destinatario {
+    font-size: var(--t-sm);
+    font-weight: 400;
+    color: #d8d0cc;
+  }
+
+  /* =================== BLOCO 2 — Contagem regressiva =================== */
+  .bl-countdown {
+    height: 260px;
+    background: var(--base);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-2);
+  }
+  .bl-countdown .numero {
+    font-size: var(--t-hero);
+    font-weight: 800;
+    color: var(--coral);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .bl-countdown .sub {
+    font-size: var(--t-md);
+    font-weight: 500;
+    color: var(--texto-sec);
+  }
+
+  /* =================== BLOCO 3 — Manchete =================== */
+  .bl-manchete {
+    height: 320px;
+    padding: 0 var(--s-8);
+    display: flex;
+    align-items: center;
+  }
+  .bl-manchete .card {
+    width: 100%;
+    background: var(--surface);
+    border-left: 6px solid var(--coral);
+    border-radius: var(--r-md);
+    padding: var(--s-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+  .bl-manchete .tag {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--coral);
+  }
+  .bl-manchete .titulo {
+    font-size: var(--t-xl);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--texto);
+  }
+  .bl-manchete .corpo {
+    font-size: var(--t-md);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--texto-sec);
+  }
+
+  /* =================== BLOCO 4 — Cards de prioridade =================== */
+  .bl-prioridades {
+    padding: var(--s-6) var(--s-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+  }
+  .prio-card {
+    background: var(--surface);
+    border: 1px solid var(--borda);
+    border-radius: var(--r-lg);
+    padding: var(--s-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    position: relative;
+  }
+  .prio-card .topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .prio-card .icone {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--r-md);
+    background: var(--coral);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .prio-card .icone svg { width: 30px; height: 30px; }
+  .prio-card .pill {
+    font-family: var(--font-sans);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    padding: var(--s-2) var(--s-4);
+    border-radius: var(--r-full);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .pill-ambar { background: var(--pill-ambar); color: #6b4c12; }
+  .pill-azul  { background: var(--pill-azul);  color: #1c3f5c; }
+  .pill-verde { background: var(--pill-verde); color: #204d20; }
+
+  .prio-card .titulo {
+    font-size: var(--t-md);
+    font-weight: 700;
+    color: var(--texto);
+  }
+  .prio-card .corpo {
+    font-size: var(--t-sm);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--texto-sec);
+  }
+  .prio-card .empty-msg {
+    font-size: var(--t-sm);
+    font-weight: 500;
+    color: var(--texto-sec);
+    font-style: normal;
+  }
+  .prio-card .error-msg {
+    font-size: var(--t-xs);
+    font-weight: 500;
+    color: var(--vermelho);
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+  }
+
+  /* =================== BLOCO 5 — Números-chave =================== */
+  .bl-numeros {
+    padding: var(--s-6) var(--s-8);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-3);
+  }
+  .num-card {
+    background: var(--surface);
+    border: 1px solid var(--borda);
+    border-radius: var(--r-md);
+    padding: var(--s-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+  .num-card .label {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--texto-sec);
+  }
+  .num-card .valor {
+    font-size: var(--t-xl);
+    font-weight: 700;
+    color: var(--texto);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .num-card .valor.coral { color: var(--coral); }
+  .num-card .sub {
+    font-size: var(--t-xs);
+    font-weight: 500;
+    color: var(--texto-sec);
+  }
+  .sub-ambar { color: #a97a1f; }
+  .sub-vermelho { color: var(--vermelho); }
+  .sub-verde { color: #4c8c4c; }
+
+  /* =================== BLOCO 6 — Rodapé =================== */
+  .bl-footer {
+    margin-top: auto;
+    padding: var(--s-6) var(--s-8) var(--s-8);
+    border-top: 1px solid var(--borda);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+  .bl-footer .linha {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bl-footer .meta {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    color: var(--texto-sec);
+  }
+  .bl-footer .qr-block {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  .bl-footer .qr-label {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    color: var(--texto-sec);
+  }
+  .bl-footer .assinatura {
+    font-size: var(--t-xs);
+    font-weight: 500;
+    font-style: italic;
+    color: var(--texto-sec);
+  }
+
+  /* ---------- Shimmer (estado loading — TODO ilustrado no bloco 5) ---------- */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .skeleton {
+    background: linear-gradient(90deg, var(--borda) 25%, #f5eae4 37%, var(--borda) 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+    border-radius: var(--r-sm);
+    color: transparent !important;
+  }
+
+  /* ---------- Botão de ação (fora do canvas) ---------- */
+  .btn-primary {
+    position: fixed;
+    bottom: var(--s-6);
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 400px;
+    background: var(--coral);
+    color: #fff;
+    border: none;
+    border-radius: var(--r-full);
+    padding: 16px var(--s-6);
+    font-size: var(--t-md);
+    font-weight: 600;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(220, 91, 72, 0.35);
+    transition: background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-2);
+    z-index: 10;
+  }
+  .btn-primary:hover { background: var(--coral-hover); }
+  .btn-primary:active { transform: translateX(-50%) scale(0.98); }
+  .btn-primary:focus-visible {
+    outline: 3px solid var(--preto);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+  <header class="viewport-header">
+    <h1>Briefing Diário — Preview</h1>
+    <p>1080 × 1920 · WhatsApp story format</p>
+  </header>
+
+  <!--
+    Nota mobile (§ checklist "funciona em 375px"): o canvas abaixo é uma imagem/story
+    de dimensão fixa (1080x1920), não um layout de app. Em viewports estreitos ele é
+    exibido em width:100% mantendo aspect-ratio via .canvas-scaler + zoom, sem scroll
+    horizontal e sem recomposição do grid interno — isso é intencional, já que o
+    consumo real do artefato é a imagem exportada (PNG/PDF), não esta página HTML.
+  -->
+  <div class="canvas-wrap">
+    <div class="canvas-scaler">
+      <main class="canvas" aria-label="Briefing diário Kratos, 24 de julho de 2026">
+
+        <!-- BLOCO 1 — Cabeçalho -->
+        <header class="bl-header">
+          <div class="eyebrow">Kratos · Briefing Diário</div>
+          <h1 class="data">Sex, 24 jul 2026</h1>
+          <p class="destinatario">Para: Mariana Costa</p>
+        </header>
+
+        <!-- BLOCO 2 — Contagem regressiva -->
+        <!-- TODO STATE: error — se o Argos não atualizar a data-alvo, exibir aviso
+             "Data eleitoral não confirmada — usando último valor conhecido" abaixo do número -->
+        <section class="bl-countdown" aria-label="Contagem regressiva para eleição">
+          <div class="numero">72</div>
+          <p class="sub">dias até 4 out · 1º turno</p>
+        </section>
+
+        <!-- BLOCO 3 — Manchete do dia -->
+        <!-- TODO STATE: empty — se não houver manchete relevante no dia, exibir
+             "Sem alertas críticos hoje — foco na agenda" no lugar do título/corpo -->
+        <section class="bl-manchete" aria-label="Manchete do dia">
+          <div class="card">
+            <span class="tag">Manchete</span>
+            <h2 class="titulo">Alerta severo em curso: menções fiscais cresceram 340% desde 04:12</h2>
+            <p class="corpo">Plano de resposta pronto no Comando. Sua decisão até 10h.</p>
+          </div>
+        </section>
+
+        <!-- BLOCO 4 — Cards de prioridade -->
+        <section class="bl-prioridades" aria-label="Prioridades do dia">
+
+          <!-- Card 1: Aprovar hoje -->
+          <!-- TODO STATE: empty — trocar corpo por "Sem pendências pra hoje — dia livre pra estratégia" -->
+          <!-- TODO STATE: error — trocar corpo por "Argos indisponível — dado não atualizado desde 06:00" -->
+          <article class="prio-card">
+            <div class="topo">
+              <div class="icone" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 11l3 3L22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
+              </div>
+              <span class="pill pill-ambar">Aprovar hoje</span>
+            </div>
+            <h3 class="titulo">7 pendências abertas</h3>
+            <p class="corpo">2 há mais de 24h. Nota da assessoria de imprensa (R$ 12.000/mês) aguarda seu aprovar.</p>
+          </article>
+
+          <!-- Card 2: Compromissos -->
+          <article class="prio-card">
+            <div class="topo">
+              <div class="icone" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <path d="M16 2v4M8 2v4M3 10h18" />
+                </svg>
+              </div>
+              <span class="pill pill-azul">Compromissos</span>
+            </div>
+            <h3 class="titulo">3 compromissos hoje</h3>
+            <p class="corpo">10h Associação Comercial · briefing pronto. 15h Entrevista Rádio Guarujá. 18h Reunião equipe.</p>
+          </article>
+
+          <!-- Card 3: Oportunidade -->
+          <article class="prio-card">
+            <div class="topo">
+              <div class="icone" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 11l18-8-8 18-2-8-8-2z" />
+                </svg>
+              </div>
+              <span class="pill pill-verde">Oportunidade</span>
+            </div>
+            <h3 class="titulo">Bairros descobertos com demanda alta</h3>
+            <p class="corpo">Capoeiras e Rio Vermelho. Polis sugere visita esta semana. Cobertura territorial em 62%.</p>
+          </article>
+
+        </section>
+
+        <!-- BLOCO 5 — Números-chave -->
+        <!-- TODO STATE: loading — aplicar classe .skeleton em .valor e .sub de cada
+             num-card enquanto os dados do Polis/Argos não retornam -->
+        <section class="bl-numeros" aria-label="Números-chave da campanha">
+          <div class="num-card">
+            <span class="label">Teto TSE</span>
+            <span class="valor">33,9%</span>
+            <span class="sub sub-ambar">R$ 847k / R$ 2,5M · +R$ 128k semana</span>
+          </div>
+          <div class="num-card">
+            <span class="label">Menções 24h</span>
+            <span class="valor coral">2.147</span>
+            <span class="sub sub-vermelho">↑ 340% do baseline</span>
+          </div>
+          <div class="num-card">
+            <span class="label">Demandas 7d</span>
+            <span class="valor">43</span>
+            <span class="sub sub-verde">+11% vs semana anterior</span>
+          </div>
+          <div class="num-card">
+            <span class="label">Cobertura</span>
+            <span class="valor">62%</span>
+            <span class="sub">dos bairros críticos mapeados</span>
+          </div>
+        </section>
+
+        <!-- BLOCO 6 — Rodapé -->
+        <footer class="bl-footer">
+          <div class="linha">
+            <span class="meta">Kratos v0.3.1 · gerado 07:00 · próximo às 21h</span>
+            <div class="qr-block">
+              <!-- QR simples geométrico, decorativo -->
+              <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true">
+                <rect width="60" height="60" fill="#fff" stroke="#eee0da" />
+                <rect x="4" y="4" width="14" height="14" fill="#101010" />
+                <rect x="42" y="4" width="14" height="14" fill="#101010" />
+                <rect x="4" y="42" width="14" height="14" fill="#101010" />
+                <rect x="8" y="8" width="6" height="6" fill="#fff" />
+                <rect x="46" y="8" width="6" height="6" fill="#fff" />
+                <rect x="8" y="46" width="6" height="6" fill="#fff" />
+                <rect x="22" y="4" width="4" height="4" fill="#101010" />
+                <rect x="30" y="4" width="4" height="4" fill="#101010" />
+                <rect x="22" y="12" width="4" height="4" fill="#101010" />
+                <rect x="22" y="22" width="4" height="4" fill="#101010" />
+                <rect x="30" y="22" width="4" height="4" fill="#101010" />
+                <rect x="38" y="22" width="4" height="4" fill="#101010" />
+                <rect x="22" y="30" width="4" height="4" fill="#101010" />
+                <rect x="46" y="30" width="4" height="4" fill="#101010" />
+                <rect x="22" y="38" width="4" height="4" fill="#101010" />
+                <rect x="30" y="38" width="4" height="4" fill="#101010" />
+                <rect x="38" y="46" width="4" height="4" fill="#101010" />
+                <rect x="46" y="46" width="4" height="4" fill="#101010" />
+              </svg>
+              <span class="qr-label">dashboard<br>completo</span>
+            </div>
+          </div>
+          <p class="assinatura">Strategos · orquestrador Kratos</p>
+        </footer>
+
+      </main>
+    </div>
+  </div>
+
+  <button class="btn-primary" type="button" aria-label="Enviar briefing pro WhatsApp">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M22 2L11 13" />
+      <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+    </svg>
+    Enviar pro WhatsApp
+  </button>
+
+</body>
+</html>

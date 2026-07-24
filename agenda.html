@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agenda · Kratos</title>
+<link rel="stylesheet" href="assets/kratos-ui.css">
+<style>
+/* ---------- agenda — só o que o CSS compartilhado não cobre ---------- */
+
+.kr-pill.coral { background:var(--coral); color:#fff; }
+
+.kr-ag-hero { grid-template-columns:1fr 1fr 1fr; margin-bottom:16px; }
+.kr-metric-card { display:flex; flex-direction:column; gap:7px; justify-content:space-between; }
+.kr-metric-sub { font-size:var(--t-xs); color:var(--muted); }
+
+.kr-ag-row { grid-template-columns:1.4fr 1fr; align-items:start; }
+.kr-stack { display:flex; flex-direction:column; gap:16px; }
+
+/* card do dia */
+.kr-day-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.kr-day-title { font-size:var(--t-md); font-weight:600; }
+.kr-day-nav { display:flex; gap:6px; }
+.kr-nav-btn {
+  width:30px; height:30px; border-radius:50%; border:1px solid var(--border); background:transparent;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--texto);
+  transition:all var(--dur-fast) var(--ease);
+}
+.kr-nav-btn:hover { border-color:var(--coral-suave); color:var(--coral); }
+
+.kr-day-timeline { display:flex; flex-direction:column; }
+.kr-day-item { display:flex; gap:16px; padding:16px 0; border-bottom:1px solid var(--border); }
+.kr-day-item:first-child { padding-top:0; }
+.kr-day-item:last-child { border-bottom:none; padding-bottom:0; }
+.kr-day-time { font-family:var(--font-mono); font-size:var(--t-lg); font-weight:700; flex:none; width:60px; }
+.kr-day-event { flex:1; min-width:0; }
+.kr-day-event-head { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+.kr-day-ev-title { font-size:var(--t-md); font-weight:600; }
+.kr-day-loc { font-size:var(--t-xs); color:var(--muted); margin-top:2px; }
+.kr-day-meta-row { display:flex; align-items:center; gap:12px; margin-top:12px; flex-wrap:wrap; }
+.kr-day-meta { font-size:var(--t-xs); color:var(--muted); }
+
+.kr-now-line { display:flex; align-items:center; gap:8px; padding:2px 0 2px 76px; }
+.kr-now-dot { width:8px; height:8px; border-radius:50%; background:var(--coral); flex:none; }
+.kr-now-label { font-size:var(--t-xs); font-weight:700; color:var(--coral); white-space:nowrap; }
+.kr-now-rule { flex:1; height:1px; background:var(--coral); opacity:.35; }
+
+/* próximos dias */
+.kr-next-list { display:flex; flex-direction:column; }
+.kr-next-item { display:flex; align-items:baseline; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+.kr-next-item:last-child { border-bottom:none; padding-bottom:0; }
+.kr-next-item:first-child { padding-top:0; }
+.kr-next-day { font-size:var(--t-xs); font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); width:36px; flex:none; }
+.kr-next-time { font-family:var(--font-mono); font-size:var(--t-sm); font-weight:600; width:40px; flex:none; }
+.kr-next-title { font-size:var(--t-sm); flex:1; }
+
+/* briefing do próximo compromisso */
+.kr-briefing-card { border:1.5px solid var(--coral); }
+.kr-briefing-event { font-size:var(--t-sm); font-weight:600; margin-bottom:10px; }
+.kr-briefing-list { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+.kr-briefing-list li { font-size:var(--t-sm); color:var(--texto); padding-left:14px; position:relative; }
+.kr-briefing-list li::before { content:"·"; position:absolute; left:0; color:var(--coral); font-weight:700; }
+
+/* skeleton, usado só no estado loading comentado abaixo */
+.kr-skel { display:inline-block; background:linear-gradient(90deg, var(--border) 25%, var(--base) 50%, var(--border) 75%); background-size:200% 100%; border-radius:var(--r-sm); animation:krskel 1.4s infinite; }
+@keyframes krskel { 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+
+.kr-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-top:20px; font-size:var(--t-xs); color:var(--muted); }
+
+@media (max-width:900px) {
+  .kr-ag-hero { grid-template-columns:1fr; }
+  .kr-ag-row { grid-template-columns:1fr; }
+}
+</style>
+<link rel="stylesheet" href="assets/demo-guide.css">
+</head>
+<body>
+
+<div class="kr-shell">
+
+  <aside class="kr-side">
+    <div class="kr-brand"><img src="assets/kratos-logo.svg" alt="Kratos"></div>
+    <div class="kr-user">
+      <div class="kr-avatar">R</div>
+      <div style="flex:1;min-width:0;">
+        <div class="nm">Rodrigo Barão</div>
+        <div class="rl">admin</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <nav class="kr-nav">
+      <a href="home.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span>
+        <span>Dashboard</span>
+      </a>
+      <a href="home.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+        <span>Comando</span>
+      </a>
+      <a href="pendencia-detalhe.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2 3h6l2-3h4"/><path d="M5 12 3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2l-2 7"/><path d="M3 12v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6"/></svg></span>
+        <span>Pendências</span>
+        <span class="ct">7</span>
+      </a>
+      <a href="war-room-crise.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14 6 10z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></span>
+        <span>Alertas</span>
+        <span class="ct">2</span>
+      </a>
+      <a href="financeiro.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><rect x="14.5" y="12.5" width="4.5" height="3" rx="1"/></svg></span>
+        <span>Financeiro</span>
+      </a>
+      <a href="juridico.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M4 7 2 12a2.6 2.6 0 0 0 5 0L5 7z"/><path d="M20 7l-2 5a2.6 2.6 0 0 0 5 0l-2-5z"/><path d="M8 21h8"/></svg></span>
+        <span>Jurídico</span>
+      </a>
+      <a href="territorio.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg></span>
+        <span>Território</span>
+      </a>
+      <a href="conteudo.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17l5-5 3 3 4-5 4 5"/></svg></span>
+        <span>Conteúdo</span>
+        <span class="ct">3</span>
+      </a>
+      <a href="agenda.html" class="active">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+        <span>Agenda</span>
+      </a>
+      <a href="pesquisa.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="20" y1="20" x2="15.5" y2="15.5"/></svg></span>
+        <span>Pesquisa</span>
+      </a>
+      <a href="monitoramento.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 13 7 13 9 7 13 19 16 13 22 13"/></svg></span>
+        <span>Monitoramento</span>
+      </a>
+      <a href="configuracao.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></span>
+        <span>Configuração</span>
+      </a>
+      <a href="auditoria.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <span>Auditoria</span>
+      </a>
+    </nav>
+
+    <div class="kr-promo">
+      <p>Ative módulos premium</p>
+      <button type="button">Ver módulos</button>
+    </div>
+  </aside>
+
+  <div class="kr-main">
+    <header class="kr-topbar">
+      <span class="kr-crumb">Agenda</span>
+      <div class="kr-status">
+        <span class="kr-dot"></span>
+        <span>Hermes on-line</span>
+        <span>·</span>
+        <span class="tabular">24 jul 2026 · 14:23</span>
+        <span>·</span>
+        <span>v0.3.1</span>
+      </div>
+    </header>
+
+    <main class="kr-content">
+
+      <div class="kr-screen-head">
+        <div>
+          <h1 class="kr-h1">Agenda</h1>
+          <p class="kr-sub">3 compromissos hoje · próximo em 40 min</p>
+        </div>
+        <button type="button" class="kr-btn primary">Novo compromisso</button>
+      </div>
+
+      <!-- hero: hoje + semana + cobertura territorial -->
+      <section class="kr-grid kr-ag-hero">
+        <div class="kr-card kr-metric-card">
+          <div>
+            <p class="kr-metric-label">Hoje</p>
+            <p class="kr-metric-value tabular">3</p>
+            <p class="kr-metric-sub">compromissos</p>
+          </div>
+          <span class="kr-pill coral">próximo 15:00</span>
+        </div>
+
+        <div class="kr-card kr-metric-card">
+          <div>
+            <p class="kr-metric-label">Esta semana</p>
+            <p class="kr-metric-value tabular">14</p>
+            <p class="kr-metric-sub">compromissos</p>
+          </div>
+          <span class="kr-pill verde">4 com briefing pronto</span>
+        </div>
+
+        <div class="kr-card kr-metric-card">
+          <div>
+            <p class="kr-metric-label">Cobertura territorial</p>
+            <p class="kr-metric-value tabular">5</p>
+            <p class="kr-metric-sub">bairros visitados esta semana</p>
+          </div>
+          <span class="kr-pill ambar">2 áreas críticas sem visita</span>
+        </div>
+      </section>
+
+      <!-- agenda do dia + próximos dias / briefing -->
+      <section class="kr-grid kr-ag-row">
+
+        <div class="kr-card">
+          <div class="kr-day-head">
+            <p class="kr-day-title">Sexta, 24 jul 2026</p>
+            <div class="kr-day-nav">
+              <button type="button" class="kr-nav-btn" aria-label="Dia anterior">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <button type="button" class="kr-nav-btn" aria-label="Próximo dia">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- TODO STATE: loading — skeleton da timeline enquanto a agenda carrega. Exemplo de item:
+          <div class="kr-day-item">
+            <span class="kr-skel" style="width:44px;height:20px;"></span>
+            <div class="kr-day-event">
+              <span class="kr-skel" style="width:200px;height:16px;margin-bottom:6px;"></span><br>
+              <span class="kr-skel" style="width:100px;height:11px;"></span>
+            </div>
+          </div>
+          -->
+
+          <!-- TODO STATE: empty — nenhum compromisso no dia. Substituir a kr-day-timeline por:
+          <div style="text-align:center;padding:40px 20px;">
+            <p class="kr-metric-sub">Nenhum compromisso hoje — dia livre</p>
+          </div>
+          -->
+
+          <!-- TODO STATE: error — agenda fora de sincronia com o Google Calendar. Substituir a kr-day-timeline por:
+          <div class="kr-card" style="text-align:center;padding:40px 20px;">
+            <p class="kr-card-title" style="margin-bottom:4px;">Agenda dessincronizada</p>
+            <p class="kr-metric-sub">Não foi possível confirmar os horários agora. Tentando reconectar…</p>
+          </div>
+          -->
+
+          <div class="kr-day-timeline">
+            <div class="kr-day-item">
+              <p class="kr-day-time tabular">10:00</p>
+              <div class="kr-day-event">
+                <div class="kr-day-event-head">
+                  <p class="kr-day-ev-title">Reunião Associação Comercial</p>
+                  <span class="kr-pill verde">briefing pronto</span>
+                </div>
+                <p class="kr-day-loc">Centro</p>
+                <div class="kr-day-meta-row">
+                  <span class="kr-day-meta">4 participantes</span>
+                  <a href="#" class="kr-btn outline sm">Ver briefing</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="kr-now-line">
+              <span class="kr-now-dot"></span>
+              <span class="kr-now-label tabular">agora · 14:23</span>
+              <span class="kr-now-rule"></span>
+            </div>
+
+            <div class="kr-day-item">
+              <p class="kr-day-time tabular">15:00</p>
+              <div class="kr-day-event">
+                <div class="kr-day-event-head">
+                  <p class="kr-day-ev-title">Entrevista Rádio Guarujá</p>
+                  <span class="kr-pill ambar">briefing em preparo</span>
+                </div>
+                <p class="kr-day-loc">Estúdio Centro</p>
+                <div class="kr-day-meta-row">
+                  <span class="kr-day-meta">ao vivo · 20min</span>
+                  <a href="#" class="kr-btn primary sm">Preparar</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="kr-day-item">
+              <p class="kr-day-time tabular">18:00</p>
+              <div class="kr-day-event">
+                <div class="kr-day-event-head">
+                  <p class="kr-day-ev-title">Reunião de equipe</p>
+                  <span class="kr-pill outline">interna</span>
+                </div>
+                <p class="kr-day-loc">Comitê</p>
+                <div class="kr-day-meta-row">
+                  <span class="kr-day-meta">coordenação</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-stack">
+          <div class="kr-card">
+            <p class="kr-card-title">Próximos dias</p>
+            <div class="kr-next-list">
+              <div class="kr-next-item">
+                <span class="kr-next-day">Sáb 25</span>
+                <span class="kr-next-time tabular">09:00</span>
+                <span class="kr-next-title">Caminhada Trindade</span>
+              </div>
+              <div class="kr-next-item">
+                <span class="kr-next-day">Sáb 25</span>
+                <span class="kr-next-time tabular">16:00</span>
+                <span class="kr-next-title">Visita UBS Estreito</span>
+              </div>
+              <div class="kr-next-item">
+                <span class="kr-next-day">Dom 26</span>
+                <span class="kr-next-time tabular">10:00</span>
+                <span class="kr-next-title">Feira do Rio Vermelho</span>
+              </div>
+              <div class="kr-next-item">
+                <span class="kr-next-day">Seg 27</span>
+                <span class="kr-next-time tabular">14:00</span>
+                <span class="kr-next-title">Sabatina Sindicato</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="kr-card kr-briefing-card">
+            <p class="kr-card-title">Briefing do próximo compromisso</p>
+            <p class="kr-briefing-event">Reunião Associação Comercial · 10:00</p>
+            <ul class="kr-briefing-list">
+              <li>12 associados confirmados</li>
+              <li>Presidente: João Meireles (2ª reunião)</li>
+              <li>Demanda anterior: alvará digital</li>
+              <li>Tema sensível: taxa de lixo</li>
+              <li>Objetivo: apoio formal</li>
+            </ul>
+            <a href="#" class="kr-btn primary sm">Ver briefing completo</a>
+          </div>
+        </div>
+
+      </section>
+
+      <div class="kr-footer">
+        <span>Cérebro: kratos-cerebro-piloto-2026/agenda · commit 9a3f2e</span>
+        <span>Sincronizado com Google Calendar há 8min</span>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/demo-guide.js" defer></script>
+</body>
+</html>
