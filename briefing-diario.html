@@ -87,8 +87,8 @@
 
   /* ---------- Canvas 1080x1920 ---------- */
   .canvas-wrap {
-    width: 1080px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 400px;
     aspect-ratio: 1080 / 1920;
     box-shadow: 0 20px 60px rgba(0,0,0,0.15);
     border-radius: 4px;
@@ -106,16 +106,8 @@
     flex-direction: column;
   }
 
-  @media (max-width: 1112px) {
-    .canvas-wrap {
-      width: 100%;
-    }
-    .canvas {
-      transform: scale(calc(100% / 1080 * 1));
-    }
-  }
-
-  /* Escala via CSS custom viewport trick: usamos container query fallback simples */
+  /* Canvas fixo (1080px) escalado pra caber via JS (script no fim do body).
+     transform: scale(fator) com fator unitless = largura_do_scaler / 1080. */
   .canvas-scaler {
     width: 100%;
     aspect-ratio: 1080 / 1920;
@@ -128,14 +120,7 @@
     left: 0;
     width: 1080px;
     height: 1920px;
-  }
-
-  /* Nota mobile <500px: canvas exibido em width:100% com aspect-ratio 1080:1920,
-     escalado via CSS zoom para telas estreitas. Decisão documentada no relatório. */
-  @media (max-width: 500px) {
-    .canvas-scaler .canvas {
-      zoom: calc(100vw / 1080);
-    }
+    transform-origin: top left;
   }
 
   /* =================== BLOCO 1 — Cabeçalho =================== */
@@ -590,5 +575,18 @@
     Enviar pro WhatsApp
   </button>
 
+  <script>
+    // Escala o canvas 1080x1920 pra caber na largura disponível (fator unitless).
+    (function () {
+      function fit() {
+        document.querySelectorAll(".canvas-scaler").forEach(function (s) {
+          var c = s.querySelector(".canvas");
+          if (c) c.style.transform = "scale(" + (s.clientWidth / 1080) + ")";
+        });
+      }
+      fit();
+      window.addEventListener("resize", fit);
+    })();
+  </script>
 </body>
 </html>

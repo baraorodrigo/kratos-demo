@@ -189,6 +189,8 @@ body {
   .kr-content { padding:18px 16px; }
   .kr-screen-head { flex-direction:column; align-items:flex-start; gap:12px; }
   .kr-h1 { font-size:22px; }
+  /* grids de métricas/cards se ajustam ao celular (2 por linha) em vez de cortar */
+  .kr-content .kr-grid { grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)) !important; }
   /* containers de conteúdo largo rolam sozinhos em vez de estourar a tela */
   .kr-table-wrap, .kr-scroll-x { overflow-x:auto; -webkit-overflow-scrolling:touch; }
 }
