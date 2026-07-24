@@ -8,7 +8,7 @@
 <style>
   :root{
     --base:#f6ede9; --white:#fdf9f6; --preto:#0d0b0a; --preto2:#161210;
-    --coral:#dc5b48; --coral-suave:#eaa89b; --coral-deep:#b23a28;
+    --coral:#dc5b48; --coral-suave:#eaa89b; --coral-deep:#b23a28; --coral-hover:#c44e3d;
     --verde:#7cc47c; --vermelho:#e05555; --ambar:#e6a52e; --azul:#5c9ad1;
     --texto:#1c1c1c; --muted:#8a7a76; --border:#eee0da; --border-dark:#2c2622;
     --font:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
@@ -60,7 +60,7 @@
   @media (max-width:860px){.cols,.cols.rev{grid-template-columns:1fr;gap:22px;}}
 
   /* browser frame p/ screenshots */
-  .browser{border-radius:13px;overflow:hidden;box-shadow:0 26px 60px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.08);background:#fff;}
+  .browser{border-radius:13px;overflow:hidden;box-shadow:0 26px 60px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.08);background:#fff;position:relative;}
   .dark .browser{border-color:#2c2622;box-shadow:0 30px 70px rgba(0,0,0,.5);}
   .browser .bbar{background:#ece3d9;padding:9px 13px;display:flex;align-items:center;gap:7px;}
   .browser .bdot{width:11px;height:11px;border-radius:50%;flex:none;}
@@ -69,7 +69,6 @@
   .browser.clic{cursor:pointer;transition:transform .18s var(--ease),box-shadow .18s var(--ease);}
   .browser.clic:hover{transform:translateY(-3px);box-shadow:0 34px 74px rgba(0,0,0,.34);}
   .browser .opendica{position:absolute;top:10px;right:12px;background:var(--coral);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:0.04em;padding:4px 10px;border-radius:99px;opacity:0;transition:opacity .18s;pointer-events:none;}
-  .browser{position:relative;}
   .browser.clic:hover .opendica{opacity:1;}
   .shotcap{margin-top:14px;font-size:13px;color:var(--muted);font-weight:600;text-align:center;}
   .dark .shotcap{color:#b7a99e;}
@@ -82,6 +81,10 @@
   .photohero{border-radius:16px;overflow:hidden;box-shadow:0 26px 60px rgba(0,0,0,.3);}
   .photohero img{display:block;width:100%;height:100%;max-height:66vh;object-fit:cover;}
 
+  /* concept image (imagem-assinatura) */
+  .conceptframe{border-radius:18px;overflow:hidden;box-shadow:0 34px 80px rgba(0,0,0,.55);border:1px solid rgba(220,91,72,.28);}
+  .conceptframe img{display:block;width:100%;max-height:66vh;object-fit:cover;}
+
   /* flow / cards */
   .flowcards{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
   .fcard{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:14px 15px;}
@@ -92,6 +95,12 @@
   .srcbubble .mic{width:42px;height:42px;border-radius:11px;background:var(--coral);flex:none;display:flex;align-items:center;justify-content:center;}
   .srcbubble .mic svg{width:19px;height:19px;fill:#fff;}
   .srcbubble .qt{font-size:14px;line-height:1.4;font-style:italic;}
+
+  /* highlights list (financeiro/juridico etc) */
+  .hlist{display:flex;flex-direction:column;gap:9px;margin-top:16px;}
+  .hitem{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;line-height:1.4;color:var(--texto);}
+  .dark .hitem{color:#d8ccc2;}
+  .hitem .bt{width:9px;height:9px;border-radius:3px;background:var(--coral);flex:none;margin-top:6px;} .hitem b{font-weight:700;}
 
   /* thermometer */
   .thermo{display:flex;flex-direction:column;gap:14px;margin-top:8px;}
@@ -126,14 +135,6 @@
   .secitem .chk{width:25px;height:25px;border-radius:8px;background:#1e2a1e;border:1px solid #2f4a2f;flex:none;display:flex;align-items:center;justify-content:center;}
   .secitem .chk svg{width:13px;height:13px;stroke:var(--verde);}
   .secitem .st{font-size:14.5px;line-height:1.4;color:#c7b8ac;} .secitem .st b{color:#fff;font-weight:600;}
-
-  /* offer */
-  .seal{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:112px;height:112px;border-radius:50%;
-    background:linear-gradient(135deg,#f0d17a,#dca94a);color:#5a3d0e;font-weight:800;text-align:center;box-shadow:0 14px 34px rgba(220,169,74,.4);margin-bottom:22px;}
-  .seal .big{font-size:26px;line-height:1;} .seal .sm{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-top:4px;}
-  .offlist{display:flex;flex-direction:column;gap:12px;max-width:620px;margin-top:18px;}
-  .offitem{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;line-height:1.4;}
-  .offitem .bt{width:9px;height:9px;border-radius:3px;background:var(--coral);flex:none;margin-top:6px;} .offitem b{font-weight:700;}
 
   .cta-btn{display:inline-block;margin-top:28px;background:var(--coral);color:#fff;font-weight:800;font-size:clamp(15px,1.7vw,20px);padding:15px 30px;border-radius:99px;text-decoration:none;transition:transform .16s var(--ease),background .16s;}
   .cta-btn:hover{background:var(--coral-hover);transform:translateY(-2px);}
@@ -223,41 +224,73 @@
     </div>
   </section>
 
-  <!-- 6 FOTO DA NOTA (foto real + screenshot financeiro) -->
+  <!-- 6 FINANCEIRO (foto real + copy enriquecida) -->
   <section class="slide light">
     <div class="slide-inner cols rev">
       <div class="rise">
         <div class="photohero"><img src="assets/process/nota-foto.png" alt="Foto de nota fiscal sendo tirada"></div>
       </div>
       <div>
-        <div class="eyebrow rise">A dor que tira seu sono</div>
+        <div class="eyebrow rise">Financeiro · todo mundo no mesmo lugar</div>
         <h1 class="head rise">A foto de uma nota vira sua prestação de contas.</h1>
-        <p class="body rise">A equipe fotografa a nota no grupo. O Kratos lê o valor, o CNPJ, a data. Arquiva sozinho na pasta certa e atualiza o seu teto de gastos na hora.</p>
-        <div class="fecho rise">Pronta o tempo todo. Nunca na véspera. <span class="hl">Nunca estourando o teto.</span></div>
+        <p class="body rise">Tesoureiro, coordenador, fornecedor — qualquer um fotografa a nota no grupo e tudo cai no mesmo lugar, organizado sozinho. O Kratos lê os dados direto na SEFAZ (oficial, não adivinhação por foto), arquiva por fornecedor e atualiza seu teto do TSE na hora.</p>
+        <div class="hlist rise">
+          <div class="hitem"><span class="bt"></span><div><b>Prestação de contas sem surpresa</b> — pronta o tempo todo, nunca na véspera.</div></div>
+          <div class="hitem"><span class="bt"></span><div><b>Nunca estourar o teto</b> — o limite do TSE recalculado a cada gasto.</div></div>
+          <div class="hitem"><span class="bt"></span><div><b>Tudo que gasta cai organizado</b> — por fornecedor, com a nota anexada.</div></div>
+        </div>
+        <div class="fecho rise">A conta é sua. <span class="hl">O Kratos, junto do seu contador, blinda o seu nome.</span></div>
       </div>
     </div>
   </section>
 
-  <!-- 7 SHOWCASE: CONTROLE DE MISSAO (screenshot real) -->
+  <!-- 7 JURIDICO (novo: foto + tela juridico) -->
   <section class="slide light">
-    <div class="slide-inner showcase" style="text-align:center;">
-      <div class="eyebrow rise">O sistema, de verdade</div>
-      <h1 class="head rise" style="margin:0 auto 20px;max-width:22ch;">A campanha inteira numa tela só.</h1>
-      <div class="rise browser" style="max-width:1000px;margin:0 auto;">
-        <div class="bbar"><span class="bdot" style="background:#ff5f57;"></span><span class="bdot" style="background:#febc2e;"></span><span class="bdot" style="background:#28c840;"></span><span class="burl">kratos.nexuseng.io</span></div>
-        <img src="assets/shots/comando.png" alt="Painel de comando do Kratos">
+    <div class="slide-inner cols">
+      <div>
+        <div class="eyebrow rise">Jurídico · Nomos</div>
+        <h1 class="head rise">A resposta jurídica antes de você errar.</h1>
+        <p class="body rise">"Posso fazer isso?" O Kratos consulta as regras do TSE e responde na hora. Dúvida simples, resolve na hora. Risco sério, ele encaminha pro advogado com a fonte da regra em cima. Nunca decide sozinho.</p>
+        <div class="hlist rise">
+          <div class="hitem"><span class="bt"></span><div><b>Alerta de conduta vedada</b> perto das datas críticas do calendário.</div></div>
+          <div class="hitem"><span class="bt"></span><div><b>Cada decisão registrada</b> com a regra que a fundamentou.</div></div>
+        </div>
+        <div class="fecho rise">Você anda rápido <span class="hl">sem pisar em cima da lei.</span></div>
       </div>
-      <div class="shotcap rise">Controle de Missão · o que decidir hoje, onde está o dinheiro, o que o povo pede, o que está em risco.</div>
+      <div class="rise">
+        <div class="browser">
+          <div class="bbar"><span class="bdot" style="background:#ff5f57;"></span><span class="bdot" style="background:#febc2e;"></span><span class="bdot" style="background:#28c840;"></span><span class="burl">kratos.nexuseng.io/juridico</span></div>
+          <img src="assets/shots/juridico.png" alt="Tela do jurídico do Kratos">
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- 8 TERMOMETRO (screenshot monitoramento + termômetro) -->
+  <!-- 8 MARKETING / HERMES (novo: tela conteudo) -->
+  <section class="slide light">
+    <div class="slide-inner cols rev">
+      <div class="rise">
+        <div class="browser">
+          <div class="bbar"><span class="bdot" style="background:#ff5f57;"></span><span class="bdot" style="background:#febc2e;"></span><span class="bdot" style="background:#28c840;"></span><span class="burl">kratos.nexuseng.io/conteudo</span></div>
+          <img src="assets/shots/conteudo.png" alt="Tela de conteúdo e criativos do Kratos">
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow rise">Comunicação · Hermes</div>
+        <h1 class="head rise">Uma agência de marketing dentro da campanha. 24 horas.</h1>
+        <p class="body rise">Post, story, discurso — e também imagem, vídeo e voz — sempre na sua narrativa, sem contradizer o que você já disse. É como ter uma agência inteira de plantão, dia e noite. Nada é publicado sem a sua aprovação.</p>
+        <div class="fecho rise">O conteúdo não para. <span class="hl">E toda peça de IA já sai rotulada — compliance 2026.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 RADAR DE CONTEUDO (enriquecido: grupos de WhatsApp + tela monitoramento) -->
   <section class="slide dark">
     <div class="slide-inner cols">
       <div>
-        <div class="eyebrow rise">O termômetro</div>
-        <h1 class="head rise">Você sabe o que o povo fala antes do adversário.</h1>
-        <p class="body rise">O Kratos está nos grupos de WhatsApp, no Instagram, no X, no Telegram. Escuta tudo que se fala sobre você e mede a temperatura de cada assunto.</p>
+        <div class="eyebrow rise">Radar de conteúdo · Argos</div>
+        <h1 class="head rise">Todo grupo de WhatsApp lido. Sem você ler nenhum.</h1>
+        <p class="body rise">São dezenas de grupos, centenas de mensagens por dia — ninguém consegue ler tudo. O Kratos lê. Escuta os grupos, o Instagram, o X, o TikTok e a imprensa, sem parar, e mede a temperatura de cada assunto.</p>
         <div class="thermo rise">
           <div class="trow"><div class="name">Saúde</div><div class="gauge g-hot"><i></i></div><div class="tag hot">BOMBANDO</div></div>
           <div class="trow"><div class="name">Segurança</div><div class="gauge g-warm"><i></i></div><div class="tag warm">esfriando</div></div>
@@ -274,43 +307,89 @@
     </div>
   </section>
 
-  <!-- 9 WAR ROOM (screenshot warroom) -->
+  <!-- 10 CONTROLE DE MISSAO (showcase comando) -->
+  <section class="slide light">
+    <div class="slide-inner showcase" style="text-align:center;">
+      <div class="eyebrow rise">O sistema, de verdade</div>
+      <h1 class="head rise" style="margin:0 auto 20px;max-width:22ch;">A campanha inteira numa tela só.</h1>
+      <div class="rise browser" style="max-width:1000px;margin:0 auto;">
+        <div class="bbar"><span class="bdot" style="background:#ff5f57;"></span><span class="bdot" style="background:#febc2e;"></span><span class="bdot" style="background:#28c840;"></span><span class="burl">kratos.nexuseng.io</span></div>
+        <img src="assets/shots/comando.png" alt="Painel de comando do Kratos">
+      </div>
+      <div class="shotcap rise">Controle de Missão · o que decidir hoje, onde está o dinheiro, o que o povo pede, o que está em risco.</div>
+    </div>
+  </section>
+
+  <!-- 11 LIDERANCAS CRM INTELIGENTE (enriquecido: tela territorio) -->
+  <section class="slide light">
+    <div class="slide-inner cols">
+      <div>
+        <div class="eyebrow rise">Lideranças · CRM inteligente</div>
+        <h1 class="head rise">Todas as suas lideranças num CRM que pensa.</h1>
+        <p class="body rise">Cada liderança de cada cidade e região no mapa do estado, com WhatsApp integrado. Você alinha a comunicação, envia material e acompanha a timeline do que cada uma prometeu — e do que entregou.</p>
+        <div class="fecho rise">No fim da campanha, você cruza o esperado com o realizado — <span class="hl">e sabe quem entregou voto de verdade.</span></div>
+      </div>
+      <div class="rise">
+        <div class="browser">
+          <div class="bbar"><span class="bdot" style="background:#ff5f57;"></span><span class="bdot" style="background:#febc2e;"></span><span class="bdot" style="background:#28c840;"></span><span class="burl">kratos.nexuseng.io/territorio</span></div>
+          <img src="assets/shots/territorio.png" alt="Mapa de lideranças de Santa Catarina no Kratos">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 PESQUISA E DADOS (novo: tela pesquisa) -->
   <section class="slide dark">
     <div class="slide-inner cols rev">
       <div class="rise">
         <div class="browser">
-          <div class="bbar"><span class="bdot" style="background:#ff5f57;"></span><span class="bdot" style="background:#febc2e;"></span><span class="bdot" style="background:#28c840;"></span><span class="burl">kratos.nexuseng.io/crise</span></div>
-          <img src="assets/shots/warroom.png" alt="War Room de crise do Kratos">
+          <div class="bbar"><span class="bdot" style="background:#ff5f57;"></span><span class="bdot" style="background:#febc2e;"></span><span class="bdot" style="background:#28c840;"></span><span class="burl">kratos.nexuseng.io/pesquisa</span></div>
+          <img src="assets/shots/pesquisa.png" alt="Tela de pesquisa e dados do Kratos">
         </div>
       </div>
+      <div>
+        <div class="eyebrow rise">Pesquisa e dados · Athena</div>
+        <h1 class="head rise">Números que decidem. Sem achismo, sem invenção.</h1>
+        <p class="body rise">O Kratos lê as pesquisas separando o que é fato, o que é hipótese e o que é recomendação. Compara cenários no tempo, sempre com a fonte e a margem de erro. E te avisa quando a pesquisa é fraca demais pra confiar.</p>
+        <div class="fecho rise">Você decide com clareza. <span class="hl">E o Kratos nunca inventa um número.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 WAR ROOM (screenshot warroom) -->
+  <section class="slide dark">
+    <div class="slide-inner cols">
       <div>
         <div class="eyebrow rise">A sala de guerra</div>
         <h1 class="head rise">A crise não te pega de surpresa. Nunca mais.</h1>
         <p class="body rise">No momento em que um ataque começa a se espalhar, o Kratos detecta — antes de crescer. Junta as provas, acha a origem e monta o plano de resposta. Você entra na sala de guerra e decide.</p>
         <div class="fecho rise">O adversário reage no desespero. <span class="hl">Você responde com estratégia.</span></div>
       </div>
-    </div>
-  </section>
-
-  <!-- 10 TERRITORIO (screenshot territorio) -->
-  <section class="slide light">
-    <div class="slide-inner cols">
-      <div>
-        <div class="eyebrow rise">O território na palma da mão</div>
-        <h1 class="head rise">Cada bairro, cada demanda, cada voto.</h1>
-        <p class="body rise">O Kratos mostra onde o povo pede o quê, quais bairros estão descobertos e onde vale a pena ir. Sua agenda deixa de ser achismo e passa a ser estratégia.</p>
-        <div class="fecho rise">Você não visita no escuro. <span class="hl">Você vai onde o voto está.</span></div>
-      </div>
       <div class="rise">
         <div class="browser">
-          <div class="bbar"><span class="bdot" style="background:#ff5f57;"></span><span class="bdot" style="background:#febc2e;"></span><span class="bdot" style="background:#28c840;"></span><span class="burl">kratos.nexuseng.io/territorio</span></div>
-          <img src="assets/shots/territorio.png" alt="Mapa de território do Kratos">
+          <div class="bbar"><span class="bdot" style="background:#ff5f57;"></span><span class="bdot" style="background:#febc2e;"></span><span class="bdot" style="background:#28c840;"></span><span class="burl">kratos.nexuseng.io/crise</span></div>
+          <img src="assets/shots/warroom.png" alt="War Room de crise do Kratos">
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 11 AGENTES -->
+  <!-- 14 O CEREBRO (novo: imagem-assinatura) -->
+  <section class="slide dark">
+    <div class="slide-inner cols">
+      <div>
+        <div class="eyebrow rise">O cérebro</div>
+        <h1 class="head rise">Não são sete ferramentas soltas. É um cérebro só.</h1>
+        <p class="body rise">Cada agente sabe o que o outro sabe. O financeiro conversa com o jurídico, o território com a comunicação, o monitoramento com a estratégia. Uma informação entra num canto e atravessa a campanha inteira — coordenada por uma inteligência central que nunca dorme.</p>
+        <div class="fecho rise">Sete especialistas. <span class="hl">Uma só cabeça pensando na sua campanha.</span></div>
+      </div>
+      <div class="rise">
+        <div class="conceptframe"><img src="assets/conceitos/cerebro.png" alt="O cérebro da campanha coordenando as informações"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 AGENTES -->
   <section class="slide light">
     <div class="slide-inner">
       <div class="eyebrow rise">A equipe que nunca dorme</div>
@@ -328,7 +407,7 @@
     </div>
   </section>
 
-  <!-- 12 O DIA -->
+  <!-- 16 O DIA -->
   <section class="slide light">
     <div class="slide-inner cols">
       <div>
@@ -348,7 +427,7 @@
     </div>
   </section>
 
-  <!-- 13 SEGURANCA -->
+  <!-- 17 SEGURANCA -->
   <section class="slide dark">
     <div class="slide-inner">
       <div class="eyebrow rise">Você no controle</div>
@@ -363,21 +442,7 @@
     </div>
   </section>
 
-  <!-- 14 OFERTA -->
-  <section class="slide light">
-    <div class="slide-inner">
-      <div class="eyebrow rise">Consultoria premium</div>
-      <h1 class="head wide rise">Nós operamos a máquina junto com você.</h1>
-      <div class="offlist rise">
-        <div class="offitem"><span class="bt"></span><div><b>Operação de ponta a ponta.</b> Nós entramos na campanha e tocamos o Kratos por dentro — estratégia, financeiro, jurídico, comunicação e território. Sua equipe foca em gente e voto.</div></div>
-        <div class="offitem"><span class="bt"></span><div><b>Do seu lado, todo dia.</b> Não é um sistema que você compra e vira as costas. É um time operando a sua sala de comando com você.</div></div>
-        <div class="offitem"><span class="bt"></span><div><b>Serviço premium.</b> Para quem joga pra ganhar e quer inteligência de verdade dentro da operação.</div></div>
-      </div>
-      <div class="fecho rise">Você não compra uma ferramenta. <span class="hl">Você ganha uma sala de comando — e um time operando ela.</span></div>
-    </div>
-  </section>
-
-  <!-- 15 CTA -->
+  <!-- 18 CTA -->
   <section class="slide dark capa">
     <div class="slide-inner">
       <div class="eyebrow rise">A hora é agora</div>
@@ -392,7 +457,7 @@
 
 <div class="clickzone left" id="zleft"></div>
 <div class="clickzone right" id="zright"></div>
-<div class="counter"><span id="cur">01</span> / <span id="tot">15</span></div>
+<div class="counter"><span id="cur">01</span> / <span id="tot">18</span></div>
 <div class="brandmark">Kratos</div>
 <div class="nav">
   <button id="prev" aria-label="Anterior">‹</button>
@@ -432,7 +497,15 @@
     if(Math.abs(dx)>50)go(dx<0?1:-1); x0=null;
   },{passive:true});
   // screenshots clicáveis -> abrem a tela real do mockup
-  var SCRMAP={'kratos.nexuseng.io':'home.html','kratos.nexuseng.io/monitoramento':'monitoramento.html','kratos.nexuseng.io/crise':'war-room-crise.html','kratos.nexuseng.io/territorio':'territorio.html'};
+  var SCRMAP={
+    'kratos.nexuseng.io':'home.html',
+    'kratos.nexuseng.io/juridico':'juridico.html',
+    'kratos.nexuseng.io/conteudo':'conteudo.html',
+    'kratos.nexuseng.io/monitoramento':'monitoramento.html',
+    'kratos.nexuseng.io/territorio':'territorio.html',
+    'kratos.nexuseng.io/pesquisa':'pesquisa.html',
+    'kratos.nexuseng.io/crise':'war-room-crise.html'
+  };
   document.querySelectorAll('.browser').forEach(function(b){
     var u=b.querySelector('.burl'); if(!u) return;
     var href=SCRMAP[u.textContent.trim()]; if(!href) return;
