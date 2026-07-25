@@ -147,6 +147,17 @@
         "Histórico completo, com possibilidade de voltar atrás",
         "Exportável a qualquer momento"
       ]
+    },
+    "cofre-documentos.html": {
+      agente: "Drachma & Nomos",
+      eyebrow: "Cofre de documentos",
+      titulo: "Tudo guardado, versionado e no seguro",
+      texto: "Cada nota, contrato e comprovante entra num cofre único — cifrado, com backup em duas camadas e registro de quem abriu o quê. Nada se perde e nada vaza.",
+      pontos: [
+        "Cifrado ponta a ponta + backup em 2 lugares",
+        "Toda abertura registrada — contador, advogado e você",
+        "Versionado: dá pra restaurar qualquer versão anterior"
+      ]
     }
   };
 
